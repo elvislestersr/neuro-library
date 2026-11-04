@@ -1,4 +1,4 @@
-# NeuroLibrary
+# Neurocise Studios
 
 Plain website with no build step. Edit `archive.js` to change models and products.
 

@@ -1,15 +1,21 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
-<title>NeuroLibrary</title>
+<title>Neurocise Studios</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap">
 <style>
 /* Layout concept: a flat field where cards surface from memory and sink back, with plain catalogue pages behind it. */
 :root{color-scheme:dark;--ground:#000000;--ground2:#17131f;--ink:#f6f2ff;--dim:#c2b9de;--line:rgba(255,255,255,.24);--gold:#f2c976;--goldfill:#e9c67c;--card:#ffffff;--cardink:#2c1d52;--carddim:#67588a;--book:#f5e8cf;--audio:#dce6fb;--course:#e4d8f8;
 --font:Nunito,"Helvetica Neue",Helvetica,Arial,sans-serif;--display:Comfortaa,Nunito,"Helvetica Neue",Helvetica,Arial,sans-serif;--gl:max(16px,env(safe-area-inset-left,0px));--gr:max(16px,env(safe-area-inset-right,0px))}
-body{background:radial-gradient(58% 62% at 50% 46%,rgba(92,40,178,.36),rgba(62,26,128,.14) 58%,transparent 100%),radial-gradient(38% 46% at 10% 14%,rgba(56,34,150,.24),transparent 100%),radial-gradient(42% 48% at 90% 88%,rgba(112,38,160,.22),transparent 100%),radial-gradient(30% 34% at 86% 12%,rgba(70,30,140,.14),transparent 100%),var(--ground);background-attachment:fixed}
+body{background:var(--ground)}
+#nebula{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+#nebula i{position:absolute;display:block;border-radius:50%;will-change:transform,opacity;animation:neb 67s ease-in-out infinite alternate}
+#nebula i:nth-child(1){left:8%;top:-4%;width:84%;height:108%;background:radial-gradient(closest-side,rgba(92,40,178,.4),rgba(62,26,128,.16) 60%,transparent);animation-duration:83s}
+#nebula i:nth-child(2){left:-22%;top:-26%;width:70%;height:90%;background:radial-gradient(closest-side,rgba(56,34,150,.3),transparent);animation-duration:61s;animation-delay:-20s}
+#nebula i:nth-child(3){right:-22%;bottom:-30%;width:76%;height:96%;background:radial-gradient(closest-side,rgba(112,38,160,.28),transparent);animation-duration:97s;animation-delay:-45s}
+#nebula i:nth-child(4){right:-10%;top:-24%;width:54%;height:68%;background:radial-gradient(closest-side,rgba(70,30,140,.2),transparent);animation-duration:73s;animation-delay:-10s}
+@keyframes neb{from{transform:translate(-5%,-4%) scale(.92);opacity:.72}to{transform:translate(6%,5%) scale(1.14);opacity:1}}
 body.field-on header{background:transparent}
 *{box-sizing:border-box}
-html{background:var(--ground)}
 html,body{margin:0;height:100%;color:var(--ink);font:600 15px/1.5 var(--font)}
 button,input{font:inherit;color:inherit}button{background:none;border:0;padding:0;cursor:pointer}a{color:inherit}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -37,8 +43,9 @@ body.field-on{overflow:hidden}body.field-on #page{display:none}
 #sparks{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}body:not(.field-on) #sparks{display:none}
 #field{pointer-events:none;z-index:4}.fc{pointer-events:auto}
 .fc{position:absolute;left:0;top:0;will-change:transform,opacity;text-align:left;transform-origin:center}
-.caption{position:fixed;z-index:15;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom,0px));padding-inline:var(--gl) var(--gr);text-align:center;pointer-events:none}
-.caption b{display:block;font-family:var(--display);font-weight:600;font-size:clamp(24px,3.2vw,34px);line-height:1.2}
+.caption{position:fixed;z-index:15;left:0;right:0;bottom:max(8px,env(safe-area-inset-bottom,0px));padding-inline:var(--gl) var(--gr);text-align:center;pointer-events:none}
+.caption b{display:block;font-family:var(--display);font-weight:600;font-size:clamp(20px,2vw,25px);line-height:1.2}
+sup{font-size:.55em;line-height:0;vertical-align:.55em;font-weight:600}
 .caption small{display:block;color:var(--gold);font-size:15px;font-weight:800}
 .caption span{display:block;color:var(--dim);font-size:15px;margin-top:2px}
 .logo-float{position:relative;z-index:1}
@@ -98,7 +105,7 @@ body.field-on{overflow:hidden}body.field-on #page{display:none}
 </style>
 
 <header>
-  <a class="brand" href="#home">NeuroLibrary</a>
+  <a class="brand" href="#home">Neurocise<sup>&reg;</sup> Studios</a>
   <nav aria-label="Main">
     <a href="#home" data-v="home">Home</a>
     <div class="menu" id="m-models"><button aria-expanded="false" aria-controls="drop-models">Explore the Models</button><div class="drop" id="drop-models" hidden></div></div>
@@ -106,6 +113,7 @@ body.field-on{overflow:hidden}body.field-on #page{display:none}
     <a href="#about-author" data-v="about-author">About</a>
   </nav>
 </header>
+<div id="nebula" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <canvas id="sparks" aria-hidden="true"></canvas>
 <div id="field"></div>
 <canvas id="twinkle" aria-hidden="true"></canvas>
@@ -145,7 +153,7 @@ function layout(n,cw,ch){ // jittered grid that fits the screen and leaves room 
 const orbit={on:false,t:0,rot:0};
 function orbitBox(){
   const W=innerWidth,top=document.querySelector('header').getBoundingClientRect().bottom+12,bottom=$('cap').getBoundingClientRect().top-12,A=Math.max(160,bottom-top);
-  const narrow=W<=640,side=Math.min(W*(narrow?.27:.15),A*.25,215),area=side*side/1.25;
+  const narrow=W<=640,side=Math.min(W*(narrow?.3:.15),A*.25,215),area=side*side/1.25;
   let maxH=0,maxW=1;
   field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=Math.min(W*(narrow?.5:.33),A*.33*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
   orbit.box={W,top,bottom:top+A,A,maxH,narrow,maxW};
@@ -156,7 +164,7 @@ function setOrbit(items){
   let orbitN=0;
   field.cards=items.map((it,i)=>{
     const el=document.createElement('button');el.className='fc';box.append(el);
-    const c={el,w:100,h:72,ratio:it.ratio,sun:!!it.core,base:(it.core?orbitN:orbitN++)/Math.max(1,items.filter(x=>!x.core).length)*6.2832+.35,off:0,hover:0,born:performance.now()+(REDUCED?0:200+i*90),blur:-1,seed:Math.random()*6.28};
+    const c={el,w:100,h:72,ratio:it.ratio,sun:!!it.core,base:(it.core?orbitN:orbitN++)/Math.max(1,items.filter(x=>!x.core).length)*6.2832+(innerWidth<=640?0:.35),off:0,hover:0,born:performance.now()+(REDUCED?0:200+i*90),blur:-1,seed:Math.random()*6.28};
     mountCard(c,it);
     el.onpointerenter=()=>c.over=true;el.onpointerleave=()=>c.over=false;el.onfocus=()=>c.over=true;el.onblur=()=>c.over=false;
     return c});
@@ -164,7 +172,7 @@ function setOrbit(items){
 }
 function tickOrbit(now,dt){
   orbit.t+=dt;const t=orbit.t,cs=field.cards;if(!cs.length||!orbit.box)return;
-  const gust=REDUCED?0:Math.pow(.5+.5*Math.sin(t*.09),3),speed=REDUCED?0:.05+.025*gust;orbit.rot+=speed*dt;
+  const gust=REDUCED?0:Math.pow(.5+.5*Math.sin(t*.09),3),speed=REDUCED||orbit.box.narrow?0:.05+.025*gust;orbit.rot+=speed*dt;
   const B=orbit.box,S0=.72,S1=1.05,HS=1.18;
   // sized so the largest logo stays inside the space at both the front and back of the oval
   const RY=Math.max(10,(B.A-B.maxH*S1/2-B.maxH*S0/2)/2),cy=B.top+B.maxH*S0/2+RY,cx=B.W/2,RX=Math.min(B.W/2-B.maxW*S1/2-6,B.W*(B.narrow?.34:.37));
@@ -178,9 +186,9 @@ function tickOrbit(now,dt){
     if(c.over)c.off-=speed*dt;else c.off*=Math.pow(.8,dt);
     const th=c.base+orbit.rot+c.off,z=Math.cos(th),front=(z+1)/2,e=front*front*(3-2*front);
     const en=ease(Math.min(1,Math.max(0,(now-c.born)/1200)));
-    const baseS=(S0+(S1-S0)*e)*(.8+.2*en),s=baseS+(Math.max(HS,baseS)-baseS)*h,halfW=c.w*s/2,halfH=c.h*s/2;
+    const baseS=(B.narrow?.95:S0+(S1-S0)*e)*(.8+.2*en),s=baseS+(Math.max(HS,baseS)-baseS)*h,halfW=c.w*s/2,halfH=c.h*s/2;
     const x=Math.max(halfW+4,Math.min(B.W-halfW-4,cx+Math.sin(th)*RX)),y=Math.max(B.top+halfH,Math.min(B.bottom-halfH,cy+z*RY));
-    const op=(.72+.28*e)*(anyOver&&!c.over?.75:1);
+    const op=(B.narrow?1:.72+.28*e)*(anyOver&&!c.over?.75:1);
     c.px=x;c.py=y;c.s=s;c.o=(op+(1-op)*h)*en;
     c.el.style.opacity=c.o.toFixed(3);c.el.style.zIndex=c.over?300:Math.round(e*100);
     c.el.style.transform=`translate(${(x-c.w/2).toFixed(1)}px,${(y-c.h/2).toFixed(1)}px) scale(${s.toFixed(3)})`;
@@ -331,7 +339,7 @@ function caption(s,b,l){$('cap').innerHTML=`<small>${E(s)}</small><b>${E(b)}</b>
 let depth=0,parentHash='home';
 function showHome(){
   depth=0;parentHash=null;$('outbtn').hidden=true;
-  $('cap').innerHTML='<b>The NeuroLibrary</b><small>By Elvis Lester</small><span>Over 40 years of work, 30 models, 100 books. Explore the Elvis Lester universe.</span>';
+  $('cap').innerHTML='<b>Neurocise<sup>&reg;</sup> Studios</b>';
   setOrbit(MODELS.map(modelItem));
 }
 $('outbtn').onclick=()=>{if(parentHash)location.hash=parentHash};
