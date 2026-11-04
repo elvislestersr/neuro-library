@@ -1,0 +1,420 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>NeuroLibrary</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap">
+<style>
+/* Layout concept: a flat field where cards surface from memory and sink back, with plain catalogue pages behind it. */
+:root{color-scheme:dark;--ground:#181035;--ground2:#261b4f;--ink:#f6f2ff;--dim:#c2b9de;--line:rgba(255,255,255,.24);--gold:#f2c976;--goldfill:#e9c67c;--card:#ffffff;--cardink:#2c1d52;--carddim:#67588a;--book:#f5e8cf;--audio:#dce6fb;--course:#e4d8f8;
+--font:Nunito,"Helvetica Neue",Helvetica,Arial,sans-serif;--display:Comfortaa,Nunito,"Helvetica Neue",Helvetica,Arial,sans-serif;--gl:max(16px,env(safe-area-inset-left,0px));--gr:max(16px,env(safe-area-inset-right,0px))}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ground);color:var(--ink);font:600 15px/1.5 var(--font)}
+button,input{font:inherit;color:inherit}button{background:none;border:0;padding:0;cursor:pointer}a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+[hidden]{display:none!important}
+header{position:fixed;z-index:20;top:0;left:0;right:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 24px;padding:calc(env(safe-area-inset-top,0px) + 12px) var(--gr) 12px var(--gl);background:var(--ground)}
+.brand{font-family:var(--display);font-size:19px;font-weight:600;text-decoration:none;margin-right:auto}
+nav{display:flex;gap:6px 20px;flex-wrap:wrap;max-width:100%;align-items:center}
+nav>a,.menu>button{text-decoration:none;color:var(--dim);white-space:nowrap;padding:3px 0;border-bottom:1px solid transparent}
+nav>a:hover,.menu>button:hover{color:var(--ink)}nav>a.on,.menu>button.on{color:var(--gold);border-color:var(--gold)}
+.menu{position:relative}.menu>button::after{content:"";display:inline-block;width:6px;height:6px;margin:0 2px 3px 7px;border-right:1px solid;border-bottom:1px solid;transform:rotate(45deg)}
+.drop{position:absolute;top:100%;right:0;min-width:210px;max-height:62vh;overflow-y:auto;background:var(--ground2);border:1px solid var(--line);border-radius:4px;padding:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);margin-top:6px}
+.drop::before{content:""}.drop a{display:block;padding:7px 10px;text-decoration:none;border-radius:3px;white-space:nowrap}.drop a:hover,.drop a:focus-visible{background:var(--ground);color:var(--gold)}
+.drop hr{border:0;border-top:1px solid var(--line);margin:5px 4px}
+@media(max-width:640px){nav{gap:4px 13px;font-size:14px}.menu{position:static}.drop{left:var(--gl);right:var(--gr);top:auto}}
+#page{min-height:100%;padding:calc(env(safe-area-inset-top,0px) + 92px) var(--gr) 64px var(--gl)}
+.wrap{max-width:1160px;margin:0 auto}
+h1,.brand,.caption b,.sheet h2,.model h2,.about h2{text-shadow:0 0 9px rgba(200,175,255,.28)}
+h1{font-family:var(--display);font-size:clamp(28px,4.6vw,42px);font-weight:600;line-height:1.1;margin:0 0 8px}
+.lead{color:var(--dim);max-width:60ch;margin:0 0 22px}
+
+/* zoom field */
+body.field-on{overflow:hidden}body.field-on #page{display:none}
+#field{position:fixed;inset:0;overflow:hidden;touch-action:pan-y}
+#twinkle{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}body:not(.field-on) #twinkle{display:none}
+#sparks{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}body:not(.field-on) #sparks{display:none}
+#field{pointer-events:none;z-index:4}.fc{pointer-events:auto}
+.fc{position:absolute;left:0;top:0;will-change:transform,opacity;text-align:left;transform-origin:center}
+.caption{position:fixed;z-index:15;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom,0px));padding-inline:var(--gl) var(--gr);text-align:center;pointer-events:none}
+.caption b{display:block;font-family:var(--display);font-weight:600;font-size:clamp(24px,3.2vw,34px);line-height:1.2}
+.caption small{display:block;color:var(--gold);font-size:15px;font-weight:800}
+.caption span{display:block;color:var(--dim);font-size:15px;margin-top:2px}
+.logo-float{position:relative;z-index:1}
+/* soft light behind each logo keeps its darker lettering readable on the night background */
+.logo-float img,.lit img{filter:drop-shadow(0 0 .7px rgba(255,255,255,.8))}
+.halo{position:absolute;left:0;top:0;z-index:1;border-radius:50%;pointer-events:none;background:radial-gradient(closest-side,rgba(255,246,222,.88),rgba(255,240,206,.78) 60%,rgba(255,228,176,.56) 82%,rgba(200,150,255,.12) 95%,transparent)}
+.logo-float.sun img{transform:translateY(-15%);filter:drop-shadow(0 0 .8px rgba(255,255,255,.85))}
+.tile.lit{position:relative;z-index:0;background:none;box-shadow:none}
+.oline{position:absolute;left:-12%;right:-12%;top:-16%;bottom:-16%;border:1px solid rgba(0,0,0,.4);border-radius:50%;pointer-events:none;z-index:0}
+.sat{position:absolute;left:50%;top:50%;border-radius:1.5px;pointer-events:none;box-shadow:0 0 0 1px rgba(60,40,110,.32)}
+.sat.t-book{width:8px;height:12px;margin:-6px 0 0 -4px;background:#e9c67c}.sat.t-audio{width:9px;height:9px;margin:-4.5px 0 0 -4.5px;background:#9db8f2}.sat.t-course{width:13px;height:8px;margin:-4px 0 0 -6.5px;background:#b794ec}
+.em{animation:emerge 1s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms + .22s)}
+@keyframes emerge{from{opacity:0;transform:scale(.88);filter:blur(9px)}}
+.back{display:inline-block;color:var(--dim);text-decoration:none;margin-bottom:10px}.back:hover{color:var(--gold)}
+.rows3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px 24px;max-width:720px;margin:0 auto;align-items:start}.rows3.course{max-width:1040px}.rows3 .item{text-align:center}
+.info{margin-top:30px;padding:20px 22px;background:var(--ground2);border-radius:4px}.info h2{margin:0 0 12px;font-family:var(--display);font-size:20px;font-weight:600}
+.info-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.info h3{margin:0 0 4px;font-size:15px;font-weight:800;color:var(--gold)}.info p{margin:0;color:var(--dim);font-size:15px;max-width:60ch}
+@media(max-width:640px){.info-cols{grid-template-columns:1fr}.rows3{gap:18px 12px}.rows3.course{grid-template-columns:repeat(2,minmax(0,1fr))}.rows3 .ph b{font-size:15px}.rows3 .ph{padding:8px}.rows3 .ph span{font-size:9px}}
+#outbtn{position:fixed;z-index:15;right:var(--gr);bottom:max(16px,env(safe-area-inset-bottom,0px));padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:var(--ground)}#outbtn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* cards */
+.logo-float{display:block}.logo-float img{display:block;width:100%;height:auto}
+.tile{display:block;background:var(--card);color:var(--cardink);border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.4);overflow:hidden}
+.logo-tile{padding:16px 16px 12px;text-align:center}.logo-tile img{display:block;width:100%;aspect-ratio:1.25;object-fit:contain}.logo-tile b{display:block;font-family:var(--display);font-weight:600;margin-top:8px;font-size:clamp(13px,1.2vw,16px);overflow-wrap:anywhere}.logo-tile span{font-size:12px;color:var(--carddim)}
+.offer-tile{padding:22px;display:flex;flex-direction:column;justify-content:flex-end;height:100%}.offer-tile b{font-family:var(--display);font-weight:600;font-size:30px;line-height:1.1}.offer-tile span{color:var(--carddim);font-size:13px}
+.t-book{background:var(--book)}.t-audio{background:var(--audio)}.t-course{background:var(--course)}
+.cover{display:block;position:relative;width:100%;background:var(--card);color:var(--cardink);overflow:hidden;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cover.book{aspect-ratio:2/3;background:var(--book)}.cover.audio{aspect-ratio:1;background:var(--audio)}.cover.course{aspect-ratio:16/10;background:var(--course)}
+.ph{position:absolute;inset:0;padding:12px;display:flex;flex-direction:column;justify-content:space-between}.ph b{font-family:var(--display);font-weight:600;font-size:20px;line-height:1.1}.ph span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--carddim)}
+
+/* catalogue */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;align-items:center}
+.chip{padding:5px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:var(--dim)}.chip:hover{color:var(--ink);border-color:var(--ink)}.chip.on{background:var(--goldfill);border-color:var(--goldfill);color:var(--cardink)}
+#search{flex:1 1 200px;max-width:280px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card)}#search::placeholder{color:var(--dim)}
+.grid{display:grid;gap:28px 22px;grid-template-columns:repeat(auto-fill,minmax(var(--min,150px),1fr));align-items:start}
+.item{display:block;width:100%;text-align:left;min-width:0}.item:hover .cover{transform:translateY(-4px)}.item .cover{transition:transform .25s}
+.item strong{display:block;font-weight:700;margin-top:8px}.tag{display:inline-block;font-size:12px;color:var(--gold)}
+.empty{color:var(--dim)}
+.prongs{display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:8px}.prongs a{text-decoration:none;display:block;transition:transform .25s}.prongs a:hover{transform:translateY(-4px)}.prongs .tile{min-height:170px}
+.mhead{display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:26px}.mhead .tile{padding:12px;flex:0 0 170px}.mhead img{display:block;width:100%;height:110px;object-fit:contain}.mhead>div{flex:1 1 280px;min-width:0}
+@media(max-width:640px){.prongs{grid-template-columns:1fr}.prongs .tile{min-height:110px}}
+.models{display:grid;gap:22px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.model{background:var(--ground2);padding:16px;border-radius:4px;display:flex;flex-direction:column;gap:10px;min-width:0}.model{background:none!important;padding:0!important}.model .tile,.mhead .tile{background:none;box-shadow:none}.model .tile{padding:0}.model .tile img{display:block;width:100%;height:130px;object-fit:contain}.model h2{margin:0;font-family:var(--display);font-size:20px;font-weight:600}.model p{margin:0;color:var(--dim);font-size:14px}.links{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px}.links a:hover{color:var(--gold)}
+.about{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:32px;align-items:start}.portrait{aspect-ratio:4/5;background:var(--ground2);display:grid;place-items:center;color:var(--dim);border-radius:4px}.about h2{font-family:var(--display)}.about ul{padding-left:18px;color:var(--dim)}.about p{max-width:62ch}
+@media(max-width:640px){.about{grid-template-columns:1fr}.portrait{max-width:200px}.grid{--min:130px!important;gap:22px 14px}}
+
+/* product view */
+#sheet{position:fixed;inset:0;z-index:30;background:rgba(24,16,53,.93);display:grid;place-items:center;padding:20px var(--gr) 20px var(--gl);overflow:auto;animation:fade .3s}
+@keyframes fade{from{opacity:0}}
+.sheet{display:grid;grid-template-columns:minmax(0,260px) minmax(0,340px);gap:28px;align-items:center;animation:rise .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{transform:scale(.86);opacity:.2;filter:blur(5px)}}
+.sheet h2{font-family:var(--display);font-size:29px;font-weight:600;line-height:1.1;margin:4px 0 10px}.sheet p{color:var(--dim);margin:0 0 14px}
+.buy{display:block;text-align:center;padding:11px;border-radius:999px;background:var(--goldfill);color:var(--cardink);text-decoration:none;font-weight:700}.soon{display:block;text-align:center;padding:10px;border-radius:999px;border:1px dashed var(--line);color:var(--dim);font-size:13px}
+#closer{display:block;margin-top:14px;color:var(--dim);font-size:13px}#closer:hover{color:var(--gold)}
+@media(max-width:640px){.sheet{grid-template-columns:1fr;gap:16px}.sheet .cover{max-width:170px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header>
+  <a class="brand" href="#home">NeuroLibrary</a>
+  <nav aria-label="Main">
+    <a href="#home" data-v="home">Home</a>
+    <div class="menu" id="m-models"><button aria-expanded="false" aria-controls="drop-models">Explore the Models</button><div class="drop" id="drop-models" hidden></div></div>
+    <div class="menu" id="m-offers"><button aria-expanded="false" aria-controls="drop-offers">Offerings</button><div class="drop" id="drop-offers" hidden><a href="#books">Books</a><a href="#audios">Audios</a><a href="#courses">Courses</a></div></div>
+    <a href="#about-author" data-v="about-author">About</a>
+  </nav>
+</header>
+<canvas id="sparks" aria-hidden="true"></canvas>
+<div id="field"></div>
+<canvas id="twinkle" aria-hidden="true"></canvas>
+<div class="caption" id="cap" aria-live="polite"></div>
+<button id="outbtn" hidden>Zoom out</button>
+<main id="page"></main>
+<div id="sheet" hidden role="dialog" aria-modal="true"></div>
+
+<script src="archive.js"></script>
+<script>
+const $=id=>document.getElementById(id),E=(s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const OFFERS=[{key:'books',type:'book',name:'Books'},{key:'audios',type:'audio',name:'Audios'},{key:'courses',type:'course',name:'Courses'}];
+const REDUCED=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const modelOf=id=>MODELS.find(m=>m.id===id);
+const productsFor=(m,t)=>PRODUCTS.filter(p=>(!m||p.model===m)&&(!t||p.type===t));
+const plural=(n,w)=>`${n} ${w}${n===1?'':'s'}`;
+function coverHTML(p){const m=modelOf(p.model);
+  return `<span class="cover ${p.type}">${p.cover?`<img src="${E(p.cover)}" alt="" loading="lazy">`:`<span class="ph"><span>${E(m?m.name:'')}</span><b>${E(p.title)}</b></span>`}</span>`}
+
+/* ---------- emerging card field ---------- */
+const field={cards:[],queue:[],t:0,mx:-1e4,my:-1e4,leaving:null,level:null};
+const ease=t=>t*t*(3-2*t);
+const SPEC={ // card width in px by level
+  model:w=>Math.min(230,Math.max(136,w*.17)),offer:w=>Math.min(300,Math.max(170,w*.23)),
+  book:w=>Math.min(170,Math.max(104,w*.125)),audio:w=>Math.min(190,Math.max(116,w*.14)),course:w=>Math.min(270,Math.max(160,w*.2))};
+function layout(n,cw,ch){ // jittered grid that fits the screen and leaves room for header and caption
+  const W=innerWidth,narrow=W<=640,top=narrow?96:70,bot=narrow?118:70,H=Math.max(200,innerHeight-top-bot);
+  const fit=Math.max(1,Math.floor(W*H/((cw+18)*(ch+18)))),k=Math.min(n,fit);
+  const cols=Math.max(1,Math.round(Math.sqrt(k*W/H))),rows=Math.ceil(k/cols),s=[];
+  for(let i=0;i<k;i++){const r=Math.floor(i/cols),inRow=r===rows-1?k-cols*(rows-1):cols,c=i%cols;
+    const cx=(c+.5)/inRow*W,cy=top+(r+.5)/rows*H;
+    const jx=(Math.random()-.5)*Math.max(0,W/inRow-cw)*.7,jy=(Math.random()-.5)*Math.max(0,H/rows-ch)*.7;
+    s.push({x:Math.max(cw/2+6,Math.min(W-cw/2-6,cx+jx)),y:Math.max(top+ch*.4,Math.min(top+H-ch*.4,cy+jy))})}
+  return s;
+}
+/* The model orbit: upright logos circle slowly on an oval, moving back and forward in depth, inside a fixed space. */
+const orbit={on:false,t:0,rot:0};
+function orbitBox(){
+  const W=innerWidth,top=document.querySelector('header').getBoundingClientRect().bottom+12,bottom=$('cap').getBoundingClientRect().top-12,A=Math.max(160,bottom-top);
+  const narrow=W<=640,side=Math.min(W*(narrow?.27:.15),A*.25,215),area=side*side/1.25;
+  let maxH=0,maxW=1;
+  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=Math.min(W*(narrow?.5:.31),A*.31*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
+  orbit.box={W,top,bottom:top+A,A,maxH,narrow,maxW};
+}
+function setOrbit(items){
+  const box=$('field');field.leaving=null;box.textContent='';lastSource=null;field.cards=[];
+  field.queue=[];field.overflow=false;orbit.on=true;
+  let orbitN=0;
+  field.cards=items.map((it,i)=>{
+    const el=document.createElement('button');el.className='fc';box.append(el);
+    const c={el,w:100,h:72,ratio:it.ratio,sun:!!it.core,base:(it.core?orbitN:orbitN++)/Math.max(1,items.filter(x=>!x.core).length)*6.2832+.35,off:0,hover:0,born:performance.now()+(REDUCED?0:200+i*90),blur:-1,seed:Math.random()*6.28};
+    mountCard(c,it);
+    if(c.sun){c.haloEl=document.createElement('div');c.haloEl.className='halo';box.prepend(c.haloEl)}
+    el.onpointerenter=()=>c.over=true;el.onpointerleave=()=>c.over=false;el.onfocus=()=>c.over=true;el.onblur=()=>c.over=false;
+    return c});
+  orbitBox();
+}
+function tickOrbit(now,dt){
+  orbit.t+=dt;const t=orbit.t,cs=field.cards;if(!cs.length||!orbit.box)return;
+  const gust=REDUCED?0:Math.pow(.5+.5*Math.sin(t*.09),3),speed=REDUCED?0:.05+.025*gust;orbit.rot+=speed*dt;
+  const B=orbit.box,S0=.72,S1=1.05,HS=1.18;
+  // sized so the largest logo stays inside the space at both the front and back of the oval
+  const RY=Math.max(10,(B.A-B.maxH*S1/2-B.maxH*S0/2)/2),cy=B.top+B.maxH*S0/2+RY,cx=B.W/2,RX=Math.min(B.W/2-B.maxW*S1/2-6,B.W*(B.narrow?.34:.37));
+  const anyOver=cs.some(c=>c.over);
+  cs.forEach(c=>{
+    c.hover+=((c.over?1:0)-c.hover)*Math.min(1,dt*4);const h=c.hover;
+    if(c.sun){ // the core model holds the center and breathes
+      const en=ease(Math.min(1,Math.max(0,(now-c.born)/1200))),s=(1+(REDUCED?0:Math.sin(t*.5)*.012)+h*.05)*(.85+.15*en);
+      c.px=cx;c.py=cy;c.s=s;c.o=en;orbit.sun=c;c.el.style.opacity=en.toFixed(3);c.el.style.zIndex=c.over?300:60;
+      c.el.style.transform=`translate(${(cx-c.w/2).toFixed(1)}px,${(cy-c.h/2).toFixed(1)}px) scale(${s.toFixed(3)})`;
+      const hw=2*c.w*.71,hh=2*c.h*.68,hy=cy-c.h*.15;c.haloEl.style.cssText=`width:${hw}px;height:${hh}px;opacity:${en.toFixed(3)};transform:translate(${(cx-hw/2).toFixed(1)}px,${(hy-hh/2).toFixed(1)}px) scale(${s.toFixed(3)})`;return}
+    if(c.over)c.off-=speed*dt;else c.off*=Math.pow(.8,dt);
+    const th=c.base+orbit.rot+c.off,z=Math.cos(th),front=(z+1)/2,e=front*front*(3-2*front);
+    const en=ease(Math.min(1,Math.max(0,(now-c.born)/1200)));
+    const baseS=(S0+(S1-S0)*e)*(.8+.2*en),s=baseS+(Math.max(HS,baseS)-baseS)*h,halfW=c.w*s/2,halfH=c.h*s/2;
+    const x=Math.max(halfW+4,Math.min(B.W-halfW-4,cx+Math.sin(th)*RX)),y=Math.max(B.top+halfH,Math.min(B.bottom-halfH,cy+z*RY));
+    const op=(.72+.28*e)*(anyOver&&!c.over?.75:1);
+    c.px=x;c.py=y;c.s=s;c.o=(op+(1-op)*h)*en;
+    c.el.style.opacity=c.o.toFixed(3);c.el.style.zIndex=c.over?300:Math.round(e*100);
+    c.el.style.transform=`translate(${(x-c.w/2).toFixed(1)}px,${(y-c.h/2).toFixed(1)}px) scale(${s.toFixed(3)})`;
+    const b=0;
+    if(b!==c.blur){c.blur=b;c.el.style.filter=b?`blur(${b}px)`:'none'}
+  });
+  drawSparks(now);
+}
+/* Neural flashes: a brief impulse arcs across the page, usually from one model to another. */
+const NEURO=[[140,205,70],[120,205,240],[255,212,40],[250,150,40],[190,90,220],[60,130,230]]; // the Psynergetics logo's colors
+const sp={list:[],next:0,cv:null,ctx:null,w:0,h:0};
+function sizeSparks(){const d=Math.min(devicePixelRatio||1,2);sp.w=innerWidth;sp.h=innerHeight;['sparks','twinkle'].forEach(id=>{const cv=$(id);cv.width=sp.w*d;cv.height=sp.h*d;const g=cv.getContext('2d');g.setTransform(d,0,0,d,0,0);if(id==='sparks')sp.ctx=g;else sp.tw=g});buildNetwork()}
+function arcPath(a,b,n,bend,jit){
+  const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,cx=(a.x+b.x)/2+nx*L*bend,cy=(a.y+b.y)/2+ny*L*bend,P=[];let w=0;
+  for(let i=0;i<=n;i++){const t=i/n,u=1-t;w=w*.72+(Math.random()-.5)*jit;const tap=Math.sin(t*Math.PI);
+    P.push({x:u*u*a.x+2*u*t*cx+t*t*b.x+nx*w*tap,y:u*u*a.y+2*u*t*cy+t*t*b.y+ny*w*tap})}
+  return P;
+}
+/* The neural network: a fixed web of connected cells sits quietly behind everything.
+   A response starts at one cell and lights its way along the connections. */
+const net={nodes:[],edges:[],off:null};
+function buildNetwork(){
+  const W=sp.w,H=sp.h,cols=Math.max(4,Math.round(W/150)),rows=Math.max(4,Math.round(H/125)),N=[],r=Math.random;
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const dr=r();N.push({x:(x+.5+(r()-.5)*.62)/cols*W,y:(y+.5+(r()-.5)*.62)/rows*H,d:dr<.4?.4:dr<.78?.68:1,links:[]})}
+  const E=[],root=N.map((_,i)=>i),find=i=>root[i]===i?i:(root[i]=find(root[i]));
+  const link=(i,j)=>{if(N[i].links.some(l=>l.to===j))return;const A=N[i],B=N[j],P=arcPath(A,B,12,(r()<.5?-1:1)*(.04+r()*.1),2.2),d=(A.d+B.d)/2;
+    E.push({P,d});A.links.push({to:j,P,d});B.links.push({to:i,P:[...P].reverse(),d});root[find(i)]=find(j)};
+  const dist=(A,B)=>Math.hypot(A.x-B.x,A.y-B.y);
+  N.forEach((A,i)=>{N.map((B,j)=>[dist(A,B),j]).filter(q=>q[1]!==i).sort((p,q)=>p[0]-q[0]).slice(0,3).forEach(q=>link(i,q[1]))});
+  for(;;){let best=null;N.forEach((A,i)=>N.forEach((B,j)=>{if(find(i)!==find(j)){const q=dist(A,B);if(!best||q<best[0])best=[q,i,j]}}));if(!best)break;link(best[1],best[2])} // every cell is connected
+  net.nodes=N;net.edges=E;
+  const off=document.createElement('canvas'),px=Math.min(devicePixelRatio||1,2);off.width=W*px;off.height=H*px;const g=off.getContext('2d');g.setTransform(px,0,0,px,0,0);g.lineCap='round';
+  E.forEach(e=>{g.beginPath();e.P.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.lineWidth=.5+.6*e.d;g.strokeStyle=`rgba(178,160,235,${.05+.13*e.d})`;g.stroke()});
+  N.forEach(n=>{g.beginPath();g.arc(n.x,n.y,.8+1.5*n.d,0,6.283);g.fillStyle=`rgba(205,190,250,${.14+.3*n.d})`;g.fill()});
+  net.off=off;
+}
+function spawnSpark(now){
+  if(!net.nodes.length)return;const r=Math.random,C=NEURO[Math.floor(r()*NEURO.length)];
+  sp.zone=((sp.zone||0)+1)%4;const Z=sp.zone,H=sp.h,W=sp.w;
+  const pool=net.nodes.map((n,i)=>[n,i]).filter(([n])=>Z===0?n.y<H*.35:Z===1?n.y>H*.62:Z===2?n.x<W*.28:n.x>W*.72);
+  const start=(pool.length?pool:net.nodes.map((n,i)=>[n,i]))[Math.floor(r()*(pool.length||net.nodes.length))][1];
+  const seen=new Set([start]);let front=[start];const hops=[],hop=1500+r()*700;
+  for(let lvl=0;lvl<4&&front.length;lvl++){const next=[];front.forEach(i=>{const opts=net.nodes[i].links.filter(l=>!seen.has(l.to)).sort(()=>r()-.5).slice(0,lvl?(r()<.45?2:1):2);
+    opts.forEach(l=>{seen.add(l.to);next.push(l.to);hops.push({P:l.P,d:l.d,at:lvl*hop+r()*220,to:net.nodes[l.to]})})});front=next}
+  sp.list.push({t0:now,hop,hops,start:net.nodes[start],C,end:4*hop+3400});
+}
+function strokeGlow(g,P,from,to,c,d,al){
+  if(to-from<1)return;g.beginPath();g.moveTo(P[from].x,P[from].y);for(let i=from+1;i<=to;i++)g.lineTo(P[i].x,P[i].y);
+  [[15*d,.045],[6*d,.11],[1.8*d,.5]].forEach(([w,a])=>{g.lineWidth=w;g.strokeStyle=`rgba(${c},${a*al})`;g.stroke()});
+}
+function softDot(g,x,y,R,c,al){const gl=g.createRadialGradient(x,y,0,x,y,R);gl.addColorStop(0,`rgba(${c},${al})`);gl.addColorStop(.4,`rgba(${c},${al*.35})`);gl.addColorStop(1,`rgba(${c},0)`);g.fillStyle=gl;g.beginPath();g.arc(x,y,R,0,6.283);g.fill()}
+function drawSparks(now){
+  if(!sp.ctx)return;const g=sp.ctx;g.globalCompositeOperation='source-over';g.clearRect(0,0,sp.w,sp.h);
+  if(net.off)g.drawImage(net.off,0,0,sp.w,sp.h);if(REDUCED)return;
+  g.globalCompositeOperation='lighter';drawTwinkle(now);
+  if(now>sp.next){spawnSpark(now);sp.next=now+1700+Math.random()*1500}
+  sp.list=sp.list.filter(s=>now-s.t0<s.end);g.lineCap='round';g.lineJoin='round';
+  sp.list.forEach(s=>{const el=now-s.t0,c=s.C.join(',');
+    const st=el/2600;if(st<1)softDot(g,s.start.x,s.start.y,34*s.start.d+14,c,.55*Math.sin(st*Math.PI)*(.35+.65*s.start.d));
+    s.hops.forEach(h=>{const q=(el-h.at)/s.hop;if(q<=0)return;const al=q<1?1:Math.max(0,1-(q-1)/1.5);if(al<=0)return;const n=h.P.length-1,head=Math.ceil(Math.min(1,q)*n),depth=.35+.65*h.d;
+      strokeGlow(g,h.P,0,head,c,h.d,al*depth);
+      if(q<1){const H=h.P[head];softDot(g,H.x,H.y,13*h.d+6,c,.42*depth)}
+      else softDot(g,h.to.x,h.to.y,26*h.d+10,c,.5*al*depth)})});
+}
+/* The brain's own sparkles: they glint in place on the logo and fly off it. */
+const GLINTS=[[0.561, 0.034], [0.52, 0.178], [0.59, 0.164], [0.65, 0.16], [0.653, 0.26], [0.635, 0.231], [0.408, 0.274], [0.46, 0.348], [0.573, 0.375], [0.439, 0.454]],TRAIL=[[0.29, 0.128, [255, 190, 40]], [0.335, 0.128, [130, 195, 60]], [0.395, 0.095, [255, 205, 50]], [0.361, 0.201, [150, 110, 200]], [0.259, 0.227, [170, 110, 210]], [0.298, 0.299, [90, 160, 225]], [0.348, 0.281, [130, 195, 60]], [0.353, 0.389, [255, 175, 40]]],fly=[];let lastFly=0,nextFly=0;
+function starAt(g,x,y,r,rot,c,al){g.save();g.translate(x,y);g.rotate(rot);g.globalAlpha=al;
+  const q=r*.16;g.beginPath();for(let i=0;i<4;i++){const a=i*1.5708,b=a+.7854;g.lineTo(Math.cos(a)*r,Math.sin(a)*r);g.lineTo(Math.cos(b)*q,Math.sin(b)*q)}g.closePath();
+  g.fillStyle=`rgba(${c},.28)`;g.save();g.scale(1.5,1.5);g.fill();g.restore();g.fillStyle=`rgb(${c})`;g.fill();g.beginPath();g.arc(0,0,Math.max(.8,r*.13),0,6.283);g.fillStyle='#fff';g.fill();g.restore()}
+function drawTwinkle(now){
+  const g=sp.tw,S=orbit.sun;if(!g)return;g.clearRect(0,0,sp.w,sp.h);if(!S||S.o<.2)return;
+  const dt=Math.min(.05,(now-(lastFly||now))/1000);lastFly=now;const W=S.w*S.s,H=S.h*S.s,X=S.px-W/2,Y=S.py-H/2-H*.15,base=W/62;
+  GLINTS.forEach((p,i)=>{ // the sparkles on the brain glint softly
+    const k=Math.pow(.5+.5*Math.sin(now/(1050+i*120)+i*1.9),3),x=X+p[0]*W,y=Y+p[1]*H;
+    starAt(g,x,y,base*(.45+.9*k),now/5200+i,[255,252,240],.22+.42*k)});
+  TRAIL.forEach((p,i)=>{ // the colored sparkles behind the brain glitter too, in their own colors
+    const k=Math.pow(.5+.5*Math.sin(now/(950+i*130)+i*2.3),4),x=X+p[0]*W,y=Y+p[1]*H,c=p[2].join(',');
+    g.save();g.globalCompositeOperation='lighter';const R=base*(1+4*k),gl=g.createRadialGradient(x,y,0,x,y,R);gl.addColorStop(0,`rgba(${c},${.7*k})`);gl.addColorStop(1,`rgba(${c},0)`);g.fillStyle=gl;g.beginPath();g.arc(x,y,R,0,6.283);g.fill();g.restore();
+    starAt(g,x,y,base*(.5+2.6*k),now/5200+i,p[2],.4+.6*k)});
+  if(now>nextFly&&fly.length<70){nextFly=now+(S.over?150:320)+Math.random()*260;const fromTrail=Math.random()<.5,p=fromTrail?TRAIL[Math.floor(Math.random()*TRAIL.length)]:GLINTS[Math.floor(Math.random()*GLINTS.length)],x=X+p[0]*W,y=Y+p[1]*H,cx=X+.53*W,cy=Y+.3*H;
+    let an=Math.atan2(y-cy,x-cx)+(Math.random()-.5)*.9;if(fromTrail||Math.random()<.45)an=3.5+(Math.random()-.5)*1.4;const v=(.022+Math.random()*.045)*W;
+    fly.push({x,y,vx:Math.cos(an)*v,vy:Math.sin(an)*v,t0:now,life:3000+Math.random()*3400,r:base*(.45+Math.random()*.9),rot:Math.random()*3,c:fromTrail?p[2]:NEURO[Math.floor(Math.random()*NEURO.length)],ph:Math.random()*6})}
+  for(let i=fly.length-1;i>=0;i--){const f=fly[i],q=(now-f.t0)/f.life;if(q>=1){fly.splice(i,1);continue}f.x+=f.vx*dt;f.y+=f.vy*dt;f.vx*=.995;f.vy=f.vy*.995-1.5*dt;
+    const tw=.55+.45*Math.sin(now/420+f.ph);starAt(g,f.x,f.y,f.r*(1-q*.35),f.rot+q*2,f.c,Math.min(1,q*7)*(1-q)*tw)}
+}
+function clearLeaving(){if(field.leaving){field.leaving.cards.forEach(c=>c.el.remove());field.leaving=null}}
+function mountCard(c,item){c.item=item;c.el.innerHTML=item.html;c.el.onclick=item.open;c.el.setAttribute('aria-label',item.label);c.el.style.width=c.w+'px'}
+function setField(items,cw,aspect,dirIn,sourceRect){
+  // aspect: height over width of a card, used for spacing
+  orbit.on=false;const box=$('field'),old=field.cards;
+  field.leaving={cards:old,t0:performance.now(),dirIn,source:sourceRect};
+  const ch=cw*aspect,slots=layout(items.length,cw,ch);
+  field.queue=items.slice(slots.length);field.overflow=field.queue.length>0;
+  field.cards=slots.map((s,i)=>{
+    const el=document.createElement('button');el.className='fc';box.append(el);
+    const c={el,w:cw,x:s.x,y:s.y,h:ch,phase:(i*2.399)%6.283,speed:.2+Math.random()*.14,dx:12+Math.random()*26,dy:10+Math.random()*20,fx:.11+Math.random()*.13,fy:.09+Math.random()*.13,p1:Math.random()*6.28,p2:Math.random()*6.28,hover:0,clock:0,born:performance.now()+(REDUCED?0:280+i*45),dirIn,blur:-1,back:false};
+    mountCard(c,items[i]);
+    el.onpointerenter=()=>c.over=true;el.onpointerleave=()=>c.over=false;el.onfocus=()=>c.over=true;el.onblur=()=>c.over=false;
+    return c});
+}
+function tick(now){
+  requestAnimationFrame(tick);
+  const dt=Math.min(.05,(now-(field.last||now))/1000);field.last=now;
+  const L=field.leaving;
+  if(L){const p=REDUCED?1:Math.min(1,(now-L.t0)/620),q=ease(p);
+    L.cards.forEach(c=>{const hit=c.el===L.source;
+      const s=(c.s||1)*(L.dirIn?(hit?1+q*1.9:1+q*.3):1-q*.45),x=hit?c.px+(innerWidth/2-c.px)*q:c.px,y=hit?c.py+(innerHeight/2-c.py)*q:c.py;
+      c.el.style.pointerEvents='none';c.el.style.opacity=(c.o||1)*(1-q);if(c.haloEl)c.haloEl.style.opacity=1-q;c.el.style.transform=`translate(${x-c.w/2}px,${y-c.h/2}px) scale(${s})`});
+    if(p>=1){L.cards.forEach(c=>c.el.remove());field.leaving=null}}
+  if(!document.body.classList.contains('field-on'))return;
+  if(orbit.on){tickOrbit(now,dt);return}
+  const anyOver=field.cards.some(c=>c.over);
+  field.cards.forEach(c=>{
+    c.hover+=((c.over?1:0)-c.hover)*Math.min(1,dt*6);
+    c.clock+=dt*(1-c.hover*.9);
+    const raw=.5+.5*Math.sin(c.phase+c.clock*c.speed);
+    let e=REDUCED?1:ease(ease(raw)); // lingers deep, surfaces, sinks back
+    if(field.overflow&&e<.015&&!c.over&&!c.back&&field.queue.length){c.back=true;field.queue.push(c.item);mountCard(c,field.queue.shift())}
+    if(e>.1)c.back=false;
+    e=Math.max(e,c.hover);
+    const floor=field.overflow?0:.2,calm=anyOver&&!c.over?.45:1;
+    const a=Math.min(1,Math.max(0,(now-c.born)/900)),en=ease(a);
+    const dx=REDUCED?0:Math.sin(c.p1+c.clock*c.fx)*c.dx,dy=REDUCED?0:Math.cos(c.p2+c.clock*c.fy)*c.dy;
+    const start=c.dirIn?.35:1.7,s=(.68+.42*e)*(start+(1-start)*en);
+    const cx=innerWidth/2+(c.x+dx-innerWidth/2)*(.55+.45*en),cy=innerHeight/2+(c.y+dy-innerHeight/2)*(.55+.45*en);
+    c.px=cx;c.py=cy;c.s=s;c.o=(floor+(1-floor)*e)*calm*en;
+    c.el.style.opacity=c.o.toFixed(3);c.el.style.zIndex=c.over?200:Math.round(e*100);
+    c.el.style.transform=`translate(${(cx-c.w/2).toFixed(1)}px,${(cy-c.h/2).toFixed(1)}px) scale(${s.toFixed(3)})`;
+    const b=REDUCED?0:Math.round((1-e)*(1-c.hover)*8)/2; // half-pixel steps keep this cheap
+    if(b!==c.blur){c.blur=b;c.el.style.filter=b?`blur(${b}px)`:'none'}
+    if(c.o<.03)c.el.style.pointerEvents='none';else c.el.style.pointerEvents='';
+  });
+}
+requestAnimationFrame(tick);
+
+/* ---------- zoom levels ---------- */
+function modelItem(m){const n=productsFor(m.id).length;return{label:`Enter ${m.name}`,core:m.core,html:`<span class="logo-float${m.core?' sun':''}" title="${E(m.name)}"><img src="${E(m.logo)}" alt=""></span>`,ratio:m.ratio,open:function(){location.hash='model-'+m.id}}}
+function offerItem(m,o){const n=productsFor(m.id,o.type).length;return{label:`${m.name} ${o.name}`,html:`<span class="tile offer-tile t-${o.type}" style="aspect-ratio:1.3"><b>${o.name}</b><span>${plural(n,o.type)}</span></span>`,open:()=>{location.hash=`zoom-${m.id}-${o.key}`}}}
+function productItem(p){return{label:p.title,html:coverHTML(p),open:()=>openSheet(p)}}
+let lastSource=null;
+document.addEventListener('click',e=>{const f=e.target.closest&&e.target.closest('.fc');if(f)lastSource=f},true);
+function caption(s,b,l){$('cap').innerHTML=`<small>${E(s)}</small><b>${E(b)}</b>${l?`<span>${E(l)}</span>`:''}`}
+let depth=0,parentHash='home';
+function showHome(){
+  depth=0;parentHash=null;$('outbtn').hidden=true;
+  $('cap').innerHTML='<b>The NeuroLibrary</b><small>By Elvis Lester</small><span>Over 40 years of work, 30 models, 100 books. Explore the Elvis Lester universe.</span>';
+  setOrbit(MODELS.map(modelItem));
+}
+$('outbtn').onclick=()=>{if(parentHash)location.hash=parentHash};
+let wheelSum=0,wheelLock=0;
+addEventListener('wheel',e=>{
+  if(!document.body.classList.contains('field-on')||!$('sheet').hidden)return;
+  const now=performance.now();if(now<wheelLock)return;
+  wheelSum+=e.deltaY;
+  if(wheelSum<-160){wheelSum=0;wheelLock=now+1000;
+    let best=null,bd=1e9;field.cards.forEach(c=>{const d=Math.hypot(c.px-e.clientX,c.py-e.clientY);if(d<bd&&c.o>.1){bd=d;best=c}});
+    if(best&&depth<2){lastSource=best.el;best.item.open()}}
+  if(wheelSum>160){wheelSum=0;wheelLock=now+1000;if(parentHash)location.hash=parentHash}
+},{passive:true});
+
+/* ---------- product view ---------- */
+function openSheet(p){
+  const m=modelOf(p.model),S=$('sheet');
+  S.innerHTML=`<div class="sheet"><div>${coverHTML(p)}</div><div><span class="tag">${E(m?m.name:'')}${p.tags.map(t=>' / '+E(t)).join('')}</span><h2>${E(p.title)}</h2><p>${E(p.about||'Description to come.')}</p>${p.link?`<a class="buy" href="${E(p.link)}" target="_blank" rel="noopener">Get this ${p.type}</a>`:'<span class="soon">Store link to come</span>'}<button id="closer">Close</button></div></div>`;
+  S.hidden=false;$('closer').focus();$('closer').onclick=closeSheet;
+}
+function closeSheet(){$('sheet').hidden=true}
+$('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))closeSheet()});
+addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('sheet').hidden)closeSheet();else if(parentHash&&document.body.classList.contains('field-on'))location.hash=parentHash});
+
+/* ---------- plain pages ---------- */
+const filt={model:'',q:''};
+function catalogue(o,mId){
+  filt.q='';filt.model=mId||'';
+  const P=$('page'),min={book:'150px',audio:'165px',course:'230px'}[o.type];
+  P.innerHTML=`<div class="wrap"><h1>${o.name}</h1><p class="lead">Every ${o.type} in the archive, tagged by model.</p><div class="filters"><input id="search" type="search" placeholder="Search ${o.name.toLowerCase()}" aria-label="Search ${o.name.toLowerCase()}"><button class="chip" data-m="">All models</button>${MODELS.map(m=>`<button class="chip" data-m="${m.id}">${E(m.name)}</button>`).join('')}</div><div class="grid" id="grid" style="--min:${min}"></div></div>`;
+  const draw=()=>{const g=$('grid'),q=filt.q.toLowerCase();
+    const list=productsFor(filt.model,o.type).filter(p=>!q||p.title.toLowerCase().includes(q)||modelOf(p.model).name.toLowerCase().includes(q)||p.tags.join(' ').toLowerCase().includes(q));
+    P.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.m===filt.model));
+    g.innerHTML=list.length?'':`<p class="empty">No ${o.name.toLowerCase()} match this search.</p>`;
+    list.forEach(p=>{const b=document.createElement('button');b.className='item em';b.style.setProperty('--i',Math.min(g.children.length,12));b.innerHTML=`${coverHTML(p)}<strong>${E(p.title)}</strong><span class="tag">${E(modelOf(p.model).name)}</span>`;b.onclick=()=>openSheet(p);g.append(b)})};
+  P.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{filt.model=c.dataset.m;draw()});
+  $('search').oninput=e=>{filt.q=e.target.value;draw()};draw();
+}
+function modelsPage(){
+  $('page').innerHTML=`<div class="wrap"><h1>Models</h1><p class="lead">Each model has its own books, audios and courses.</p><div class="models">${MODELS.map((m,i)=>`<article class="model em" style="--i:${Math.min(i,12)}"><a class="tile lit" href="#model-${m.id}"><img src="${E(m.logo)}" alt="${E(m.name)} logo"></a><h2>${E(m.name)}</h2><p>${E(m.description||'Description to come.')}</p><div class="links"><a href="#model-${m.id}">Open model page</a></div></article>`).join('')}</div></div>`;
+}
+function modelPage(m){
+  const info=[['When it began and its history',m.history,'The story and background of this model goes here.'],['How it works',m.how,'How this model works goes here.'],['Continuing education',m.ce,'Courses that qualify for continuing education are listed here.']];
+  $('page').innerHTML=`<div class="wrap"><a class="back" href="#models">&lt; All models</a><div class="mhead em"><span class="tile lit"><img src="${E(m.logo)}" alt="${E(m.name)} logo"></span><div>${m.core?'<small style="color:var(--gold);font-weight:800">The core model</small>':''}<h1>${E(m.name)}</h1><p class="lead" style="margin:0">${E(m.description||'Description to come.')}</p></div></div><div class="prongs">${OFFERS.map((o,i)=>`<a class="em" style="--i:${i+1}" href="#zoom-${m.id}-${o.key}"><span class="tile offer-tile t-${o.type}"><b>${o.name}</b><span>${plural(productsFor(m.id,o.type).length,o.type)}</span></span></a>`).join('')}</div><section class="info em" style="--i:5"><h2>About ${E(m.name)}</h2><div class="info-cols">${info.map(([h,v,d])=>`<div><h3>${h}</h3><p>${E(v||d)}</p></div>`).join('')}</div></section></div>`;
+}
+function productRows(m,o){
+  const ps=productsFor(m.id,o.type);
+  $('page').innerHTML=`<div class="wrap"><a class="back" href="#model-${m.id}">&lt; ${E(m.name)}</a><h1>${o.name}</h1><p class="lead">${plural(ps.length,o.type)} in ${E(m.name)}.</p><div class="rows3 ${o.type}" id="rows"></div></div>`;
+  ps.forEach((p,i)=>{const b=document.createElement('button');b.className='item em';b.style.setProperty('--i',Math.min(i,12));b.innerHTML=`${coverHTML(p)}<strong>${E(p.title)}</strong>`;b.onclick=()=>openSheet(p);$('rows').append(b)});
+}
+function aboutPage(){
+  $('page').innerHTML=`<div class="wrap"><h1>About the author</h1><div class="about"><div class="portrait">Photo to come</div><div><h2 style="font-weight:600;margin:0 0 6px">Elvis Lester</h2><p>Master Trainer and creator of the models in this archive. The full biography goes here.</p><ul><li>Qualified Teacher of Hypnosis</li><li>Qualified Supervisor (LMHC, Florida)</li><li>Advanced Master Trainer</li></ul><p><a href="https://www.neurocisestudios.com/" target="_blank" rel="noopener">Visit Neurocise Studios</a></p></div></div></div>`;
+}
+
+/* ---------- menus ---------- */
+$('drop-models').innerHTML='<a href="#models">All models</a><hr>'+MODELS.map(m=>`<a href="#model-${m.id}">${E(m.name)}</a>`).join('');
+function closeMenus(except){document.querySelectorAll('.menu').forEach(M=>{if(M===except)return;M.querySelector('.drop').hidden=true;M.firstElementChild.setAttribute('aria-expanded','false')})}
+document.querySelectorAll('.menu').forEach(M=>{const b=M.firstElementChild,d=M.querySelector('.drop');let tm;
+  const show=()=>{clearTimeout(tm);closeMenus(M);d.hidden=false;b.setAttribute('aria-expanded','true')};
+  let viaHover=false;
+  b.onclick=()=>{if(viaHover){viaHover=false;return}d.hidden?show():closeMenus()};
+  M.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'){viaHover=d.hidden;show()}});
+  M.addEventListener('pointerleave',e=>{viaHover=false;if(e.pointerType==='mouse')tm=setTimeout(()=>closeMenus(),260)});
+  d.addEventListener('click',e=>{if(e.target.closest('a'))closeMenus()});
+});
+document.addEventListener('click',e=>{if(!e.target.closest('.menu'))closeMenus()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeMenus()});
+
+/* ---------- routing ---------- */
+function route(){
+  const h=decodeURIComponent(location.hash.slice(1))||'home';closeSheet();closeMenus();
+  document.querySelectorAll('nav>a').forEach(a=>a.classList.toggle('on',a.dataset.v===h));
+  $('m-models').firstElementChild.classList.toggle('on',h==='models'||h.startsWith('model-')||h.startsWith('zoom-'));
+  $('m-offers').firstElementChild.classList.toggle('on',OFFERS.some(o=>h===o.key||h.startsWith(o.key+'-')));
+  if(h==='home'){document.body.classList.add('field-on');sizeSparks();sp.list=[];sp.next=performance.now()+800;$('cap').hidden=false;showHome();scrollTo(0,0);return}
+  document.body.classList.remove('field-on');$('cap').hidden=true;$('outbtn').hidden=true;parentHash=null;
+  // the landing page's emerging zoom plays over the page that is arriving
+  if(orbit.on){clearLeaving();orbit.on=false;field.leaving={cards:field.cards,t0:performance.now(),dirIn:true,source:lastSource};field.cards=[];lastSource=null;orbit.sun=null}
+  setTimeout(()=>{if(!document.body.classList.contains('field-on')){field.leaving=null;field.cards=[];$('field').textContent=''}},820);
+  const o=OFFERS.find(x=>h===x.key||h.startsWith(x.key+'-')),mp=h.startsWith('model-')&&modelOf(h.slice(6));
+  const z=h.startsWith('zoom-')?h.slice(5):null,zo=z&&OFFERS.find(x=>z.endsWith('-'+x.key)),zm=z&&modelOf(zo?z.slice(0,-zo.key.length-1):z);
+  if(zm&&zo)productRows(zm,zo);else if(zm)modelPage(zm);
+  else if(o)catalogue(o,modelOf(h.slice(o.key.length+1))?h.slice(o.key.length+1):'');else if(mp)modelPage(mp);else if(h==='models')modelsPage();else if(h==='about-author')aboutPage();else{location.hash='home';return}
+  scrollTo(0,0);
+}
+addEventListener('hashchange',route);
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(document.body.classList.contains('field-on'))route()},300)});
+route();
+</script>
+
+</body></html>
