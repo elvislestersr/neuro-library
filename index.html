@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap">
 <style>
 /* Layout concept: a flat field where cards surface from memory and sink back, with plain catalogue pages behind it. */
-:root{color-scheme:dark;--ground:#181035;--ground2:#261b4f;--ink:#f6f2ff;--dim:#c2b9de;--line:rgba(255,255,255,.24);--gold:#f2c976;--goldfill:#e9c67c;--card:#ffffff;--cardink:#2c1d52;--carddim:#67588a;--book:#f5e8cf;--audio:#dce6fb;--course:#e4d8f8;
+:root{color-scheme:dark;--ground:#000000;--ground2:#17131f;--ink:#f6f2ff;--dim:#c2b9de;--line:rgba(255,255,255,.24);--gold:#f2c976;--goldfill:#e9c67c;--card:#ffffff;--cardink:#2c1d52;--carddim:#67588a;--book:#f5e8cf;--audio:#dce6fb;--course:#e4d8f8;
 --font:Nunito,"Helvetica Neue",Helvetica,Arial,sans-serif;--display:Comfortaa,Nunito,"Helvetica Neue",Helvetica,Arial,sans-serif;--gl:max(16px,env(safe-area-inset-left,0px));--gr:max(16px,env(safe-area-inset-right,0px))}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--ground);color:var(--ink);font:600 15px/1.5 var(--font)}
@@ -83,7 +83,7 @@ body.field-on{overflow:hidden}body.field-on #page{display:none}
 @media(max-width:640px){.about{grid-template-columns:1fr}.portrait{max-width:200px}.grid{--min:130px!important;gap:22px 14px}}
 
 /* product view */
-#sheet{position:fixed;inset:0;z-index:30;background:rgba(24,16,53,.93);display:grid;place-items:center;padding:20px var(--gr) 20px var(--gl);overflow:auto;animation:fade .3s}
+#sheet{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.93);display:grid;place-items:center;padding:20px var(--gr) 20px var(--gl);overflow:auto;animation:fade .3s}
 @keyframes fade{from{opacity:0}}
 .sheet{display:grid;grid-template-columns:minmax(0,260px) minmax(0,340px);gap:28px;align-items:center;animation:rise .45s cubic-bezier(.2,.8,.2,1)}
 @keyframes rise{from{transform:scale(.86);opacity:.2;filter:blur(5px)}}
