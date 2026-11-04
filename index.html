@@ -6,8 +6,11 @@
 /* Layout concept: a flat field where cards surface from memory and sink back, with plain catalogue pages behind it. */
 :root{color-scheme:dark;--ground:#000000;--ground2:#17131f;--ink:#f6f2ff;--dim:#c2b9de;--line:rgba(255,255,255,.24);--gold:#f2c976;--goldfill:#e9c67c;--card:#ffffff;--cardink:#2c1d52;--carddim:#67588a;--book:#f5e8cf;--audio:#dce6fb;--course:#e4d8f8;
 --font:Nunito,"Helvetica Neue",Helvetica,Arial,sans-serif;--display:Comfortaa,Nunito,"Helvetica Neue",Helvetica,Arial,sans-serif;--gl:max(16px,env(safe-area-inset-left,0px));--gr:max(16px,env(safe-area-inset-right,0px))}
+body{background:radial-gradient(58% 62% at 50% 46%,rgba(92,40,178,.36),rgba(62,26,128,.14) 58%,transparent 100%),radial-gradient(38% 46% at 10% 14%,rgba(56,34,150,.24),transparent 100%),radial-gradient(42% 48% at 90% 88%,rgba(112,38,160,.22),transparent 100%),radial-gradient(30% 34% at 86% 12%,rgba(70,30,140,.14),transparent 100%),var(--ground);background-attachment:fixed}
+body.field-on header{background:transparent}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--ground);color:var(--ink);font:600 15px/1.5 var(--font)}
+html{background:var(--ground)}
+html,body{margin:0;height:100%;color:var(--ink);font:600 15px/1.5 var(--font)}
 button,input{font:inherit;color:inherit}button{background:none;border:0;padding:0;cursor:pointer}a{color:inherit}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 [hidden]{display:none!important}
