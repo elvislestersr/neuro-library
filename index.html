@@ -41,8 +41,7 @@ body.field-on{overflow:hidden}body.field-on #page{display:none}
 .logo-float{position:relative;z-index:1}
 /* soft light behind each logo keeps its darker lettering readable on the night background */
 .logo-float img,.lit img{filter:drop-shadow(0 0 .7px rgba(255,255,255,.8))}
-.halo{position:absolute;left:0;top:0;z-index:1;border-radius:50%;pointer-events:none;background:radial-gradient(closest-side,rgba(255,246,222,.88),rgba(255,240,206,.78) 60%,rgba(255,228,176,.56) 82%,rgba(200,150,255,.12) 95%,transparent)}
-.logo-float.sun img{transform:translateY(-15%);filter:drop-shadow(0 0 .8px rgba(255,255,255,.85))}
+.logo-float.sun img{filter:drop-shadow(0 0 .9px rgba(255,255,255,.95)) drop-shadow(0 0 .5px rgba(255,255,255,.7))}
 .tile.lit{position:relative;z-index:0;background:none;box-shadow:none}
 .oline{position:absolute;left:-12%;right:-12%;top:-16%;bottom:-16%;border:1px solid rgba(0,0,0,.4);border-radius:50%;pointer-events:none;z-index:0}
 .sat{position:absolute;left:50%;top:50%;border-radius:1.5px;pointer-events:none;box-shadow:0 0 0 1px rgba(60,40,110,.32)}
@@ -145,7 +144,7 @@ function orbitBox(){
   const W=innerWidth,top=document.querySelector('header').getBoundingClientRect().bottom+12,bottom=$('cap').getBoundingClientRect().top-12,A=Math.max(160,bottom-top);
   const narrow=W<=640,side=Math.min(W*(narrow?.27:.15),A*.25,215),area=side*side/1.25;
   let maxH=0,maxW=1;
-  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=Math.min(W*(narrow?.5:.31),A*.31*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
+  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=Math.min(W*(narrow?.5:.33),A*.33*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
   orbit.box={W,top,bottom:top+A,A,maxH,narrow,maxW};
 }
 function setOrbit(items){
@@ -156,7 +155,6 @@ function setOrbit(items){
     const el=document.createElement('button');el.className='fc';box.append(el);
     const c={el,w:100,h:72,ratio:it.ratio,sun:!!it.core,base:(it.core?orbitN:orbitN++)/Math.max(1,items.filter(x=>!x.core).length)*6.2832+.35,off:0,hover:0,born:performance.now()+(REDUCED?0:200+i*90),blur:-1,seed:Math.random()*6.28};
     mountCard(c,it);
-    if(c.sun){c.haloEl=document.createElement('div');c.haloEl.className='halo';box.prepend(c.haloEl)}
     el.onpointerenter=()=>c.over=true;el.onpointerleave=()=>c.over=false;el.onfocus=()=>c.over=true;el.onblur=()=>c.over=false;
     return c});
   orbitBox();
@@ -173,8 +171,7 @@ function tickOrbit(now,dt){
     if(c.sun){ // the core model holds the center and breathes
       const en=ease(Math.min(1,Math.max(0,(now-c.born)/1200))),s=(1+(REDUCED?0:Math.sin(t*.5)*.012)+h*.05)*(.85+.15*en);
       c.px=cx;c.py=cy;c.s=s;c.o=en;orbit.sun=c;c.el.style.opacity=en.toFixed(3);c.el.style.zIndex=c.over?300:60;
-      c.el.style.transform=`translate(${(cx-c.w/2).toFixed(1)}px,${(cy-c.h/2).toFixed(1)}px) scale(${s.toFixed(3)})`;
-      const hw=2*c.w*.71,hh=2*c.h*.68,hy=cy-c.h*.15;c.haloEl.style.cssText=`width:${hw}px;height:${hh}px;opacity:${en.toFixed(3)};transform:translate(${(cx-hw/2).toFixed(1)}px,${(hy-hh/2).toFixed(1)}px) scale(${s.toFixed(3)})`;return}
+      c.el.style.transform=`translate(${(cx-c.w/2).toFixed(1)}px,${(cy-c.h/2).toFixed(1)}px) scale(${s.toFixed(3)})`;return}
     if(c.over)c.off-=speed*dt;else c.off*=Math.pow(.8,dt);
     const th=c.base+orbit.rot+c.off,z=Math.cos(th),front=(z+1)/2,e=front*front*(3-2*front);
     const en=ease(Math.min(1,Math.max(0,(now-c.born)/1200)));
@@ -199,51 +196,56 @@ function arcPath(a,b,n,bend,jit){
     P.push({x:u*u*a.x+2*u*t*cx+t*t*b.x+nx*w*tap,y:u*u*a.y+2*u*t*cy+t*t*b.y+ny*w*tap})}
   return P;
 }
-/* The neural network: a fixed web of connected cells sits quietly behind everything.
-   A response starts at one cell and lights its way along the connections. */
-const net={nodes:[],edges:[],off:null};
+/* Neural arcing: an unseen network extends past the edges of the browser.
+   An impulse follows its connections as one long smooth arc; only the moving impulse is ever visible. */
+const net={nodes:[]};
 function buildNetwork(){
-  const W=sp.w,H=sp.h,cols=Math.max(4,Math.round(W/150)),rows=Math.max(4,Math.round(H/125)),N=[],r=Math.random;
-  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const dr=r();N.push({x:(x+.5+(r()-.5)*.62)/cols*W,y:(y+.5+(r()-.5)*.62)/rows*H,d:dr<.4?.4:dr<.78?.68:1,links:[]})}
-  const E=[],root=N.map((_,i)=>i),find=i=>root[i]===i?i:(root[i]=find(root[i]));
-  const link=(i,j)=>{if(N[i].links.some(l=>l.to===j))return;const A=N[i],B=N[j],P=arcPath(A,B,12,(r()<.5?-1:1)*(.04+r()*.1),2.2),d=(A.d+B.d)/2;
-    E.push({P,d});A.links.push({to:j,P,d});B.links.push({to:i,P:[...P].reverse(),d});root[find(i)]=find(j)};
-  const dist=(A,B)=>Math.hypot(A.x-B.x,A.y-B.y);
-  N.forEach((A,i)=>{N.map((B,j)=>[dist(A,B),j]).filter(q=>q[1]!==i).sort((p,q)=>p[0]-q[0]).slice(0,3).forEach(q=>link(i,q[1]))});
-  for(;;){let best=null;N.forEach((A,i)=>N.forEach((B,j)=>{if(find(i)!==find(j)){const q=dist(A,B);if(!best||q<best[0])best=[q,i,j]}}));if(!best)break;link(best[1],best[2])} // every cell is connected
-  net.nodes=N;net.edges=E;
-  const off=document.createElement('canvas'),px=Math.min(devicePixelRatio||1,2);off.width=W*px;off.height=H*px;const g=off.getContext('2d');g.setTransform(px,0,0,px,0,0);g.lineCap='round';
-  E.forEach(e=>{g.beginPath();e.P.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.lineWidth=.5+.6*e.d;g.strokeStyle=`rgba(178,160,235,${.05+.13*e.d})`;g.stroke()});
-  N.forEach(n=>{g.beginPath();g.arc(n.x,n.y,.8+1.5*n.d,0,6.283);g.fillStyle=`rgba(205,190,250,${.14+.3*n.d})`;g.fill()});
-  net.off=off;
+  const W=sp.w,H=sp.h,cols=Math.max(5,Math.round(W*1.4/180)),rows=Math.max(5,Math.round(H*1.4/165)),N=[],r=Math.random;
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){N.push({x:-W*.2+(x+.5+(r()-.5)*.7)/cols*W*1.4,y:-H*.2+(y+.5+(r()-.5)*.7)/rows*H*1.4,links:[]})}
+  N.forEach((A,i)=>N.map((B,j)=>[Math.hypot(A.x-B.x,A.y-B.y),j]).filter(q=>q[1]!==i).sort((p,q)=>p[0]-q[0]).slice(0,5).forEach(q=>{if(!A.links.includes(q[1]))A.links.push(q[1]);if(!N[q[1]].links.includes(i))N[q[1]].links.push(i)}));
+  net.nodes=N;
+}
+function smoothArc(pts){ // one continuous curve through the chosen cells
+  const out=[],p=i=>pts[Math.max(0,Math.min(pts.length-1,i))];
+  for(let i=0;i<pts.length-1;i++){const a=p(i-1),b=p(i),c=p(i+1),d=p(i+2);for(let k=0;k<12;k++){const t=k/12,t2=t*t,t3=t2*t;
+    out.push({x:.5*(2*b.x+(c.x-a.x)*t+(2*a.x-5*b.x+4*c.x-d.x)*t2+(3*b.x-a.x-3*c.x+d.x)*t3),y:.5*(2*b.y+(c.y-a.y)*t+(2*a.y-5*b.y+4*c.y-d.y)*t2+(3*b.y-a.y-3*c.y+d.y)*t3)})}}
+  out.push(pts[pts.length-1]);return out;
+}
+function walk(start,dir,len){ // heads onward with a gentle turn, which makes the path arc
+  const N=net.nodes,chain=[N[start]],seen=new Set([start]);let i=start,an=dir;const turn=(Math.random()<.5?-1:1)*(.22+Math.random()*.3);
+  for(let k=0;k<len;k++){an+=turn;let best=-1,bs=-9;N[i].links.forEach(j=>{if(seen.has(j))return;const q=Math.cos(Math.atan2(N[j].y-N[i].y,N[j].x-N[i].x)-an)+Math.random()*.15;if(q>bs){bs=q;best=j}});
+    if(best<0||bs<.1)break;seen.add(best);chain.push(N[best]);i=best}
+  return chain;
+}
+function fireArc(now,start,dir,delay,C){
+  const chain=walk(start,dir,4+Math.floor(Math.random()*4));if(chain.length<3)return;
+  const P=smoothArc(chain);let L=0;for(let i=1;i<P.length;i++)L+=Math.hypot(P[i].x-P[i-1].x,P[i].y-P[i-1].y);
+  const dr=Math.random(),d=dr<.4?.42:dr<.78?.7:1,speed=(150+Math.random()*90)*(.65+.35*d);
+  sp.list.push({t0:now+delay,dur:L*1.4/speed*1000,P,C,d,cells:chain});
 }
 function spawnSpark(now){
-  if(!net.nodes.length)return;const r=Math.random,C=NEURO[Math.floor(r()*NEURO.length)];
-  sp.zone=((sp.zone||0)+1)%4;const Z=sp.zone,H=sp.h,W=sp.w;
-  const pool=net.nodes.map((n,i)=>[n,i]).filter(([n])=>Z===0?n.y<H*.35:Z===1?n.y>H*.62:Z===2?n.x<W*.28:n.x>W*.72);
-  const start=(pool.length?pool:net.nodes.map((n,i)=>[n,i]))[Math.floor(r()*(pool.length||net.nodes.length))][1];
-  const seen=new Set([start]);let front=[start];const hops=[],hop=1500+r()*700;
-  for(let lvl=0;lvl<4&&front.length;lvl++){const next=[];front.forEach(i=>{const opts=net.nodes[i].links.filter(l=>!seen.has(l.to)).sort(()=>r()-.5).slice(0,lvl?(r()<.45?2:1):2);
-    opts.forEach(l=>{seen.add(l.to);next.push(l.to);hops.push({P:l.P,d:l.d,at:lvl*hop+r()*220,to:net.nodes[l.to]})})});front=next}
-  sp.list.push({t0:now,hop,hops,start:net.nodes[start],C,end:4*hop+3400});
+  if(!net.nodes.length)return;const r=Math.random,N=net.nodes,W=sp.w,H=sp.h;
+  sp.zone=((sp.zone||0)+1)%4;const Z=sp.zone;
+  const pool=N.map((n,i)=>[n,i]).filter(([n])=>Z===0?(n.y<H*.3&&n.y>-H*.12):Z===1?(n.y>H*.68&&n.y<H*1.12):Z===2?(n.x<W*.25&&n.x>-W*.12):(n.x>W*.75&&n.x<W*1.12));
+  const start=pool[Math.floor(r()*pool.length)][1],o=N[start],inward=Math.atan2(H/2-o.y,W/2-o.x)+(r()-.5)*1.5;
+  const pick=()=>NEURO[Math.floor(r()*NEURO.length)];
+  fireArc(now,start,inward,0,pick());
+  if(r()<.5)fireArc(now,start,inward+(r()<.5?-1:1)*(.7+r()*.6),350+r()*700,pick()); // sometimes a second arc in another color
 }
 function strokeGlow(g,P,from,to,c,d,al){
   if(to-from<1)return;g.beginPath();g.moveTo(P[from].x,P[from].y);for(let i=from+1;i<=to;i++)g.lineTo(P[i].x,P[i].y);
-  [[15*d,.045],[6*d,.11],[1.8*d,.5]].forEach(([w,a])=>{g.lineWidth=w;g.strokeStyle=`rgba(${c},${a*al})`;g.stroke()});
+  [[16*d,.075],[7*d,.18],[2.2*d,.85]].forEach(([w,a])=>{g.lineWidth=w;g.strokeStyle=`rgba(${c},${a*al})`;g.stroke()});
 }
 function softDot(g,x,y,R,c,al){const gl=g.createRadialGradient(x,y,0,x,y,R);gl.addColorStop(0,`rgba(${c},${al})`);gl.addColorStop(.4,`rgba(${c},${al*.35})`);gl.addColorStop(1,`rgba(${c},0)`);g.fillStyle=gl;g.beginPath();g.arc(x,y,R,0,6.283);g.fill()}
 function drawSparks(now){
-  if(!sp.ctx)return;const g=sp.ctx;g.globalCompositeOperation='source-over';g.clearRect(0,0,sp.w,sp.h);
-  if(net.off)g.drawImage(net.off,0,0,sp.w,sp.h);if(REDUCED)return;
+  if(!sp.ctx)return;const g=sp.ctx;g.globalCompositeOperation='source-over';g.clearRect(0,0,sp.w,sp.h);if(REDUCED)return;
   g.globalCompositeOperation='lighter';drawTwinkle(now);
-  if(now>sp.next){spawnSpark(now);sp.next=now+1700+Math.random()*1500}
-  sp.list=sp.list.filter(s=>now-s.t0<s.end);g.lineCap='round';g.lineJoin='round';
-  sp.list.forEach(s=>{const el=now-s.t0,c=s.C.join(',');
-    const st=el/2600;if(st<1)softDot(g,s.start.x,s.start.y,34*s.start.d+14,c,.55*Math.sin(st*Math.PI)*(.35+.65*s.start.d));
-    s.hops.forEach(h=>{const q=(el-h.at)/s.hop;if(q<=0)return;const al=q<1?1:Math.max(0,1-(q-1)/1.5);if(al<=0)return;const n=h.P.length-1,head=Math.ceil(Math.min(1,q)*n),depth=.35+.65*h.d;
-      strokeGlow(g,h.P,0,head,c,h.d,al*depth);
-      if(q<1){const H=h.P[head];softDot(g,H.x,H.y,13*h.d+6,c,.42*depth)}
-      else softDot(g,h.to.x,h.to.y,26*h.d+10,c,.5*al*depth)})});
+  if(now>sp.next){spawnSpark(now);sp.next=now+1500+Math.random()*1700}
+  sp.list=sp.list.filter(s=>now-s.t0<s.dur);g.lineCap='round';g.lineJoin='round';
+  sp.list.forEach(s=>{const p=(now-s.t0)/s.dur;if(p<=0)return;const c=s.C.join(','),n=s.P.length-1,depth=.4+.6*s.d;
+    const head=Math.min(n,Math.ceil(p*1.4*n)),tail=Math.max(0,head-Math.round(Math.min(n*.42,70))),rest=Math.max(0,(p*1.4-1)/.4),al=(1-rest)*depth,CH=7;
+    for(let k=0;k<CH;k++){const a=tail+Math.floor((head-tail)*k/CH),b=tail+Math.floor((head-tail)*(k+1)/CH);strokeGlow(g,s.P,a,b,c,s.d,al*Math.pow((k+1)/CH,1.6))}
+    const H=s.P[head];softDot(g,H.x,H.y,18*s.d+8,c,.85*al)});
 }
 /* The brain's own sparkles: they glint in place on the logo and fly off it. */
 const GLINTS=[[0.561, 0.034], [0.52, 0.178], [0.59, 0.164], [0.65, 0.16], [0.653, 0.26], [0.635, 0.231], [0.408, 0.274], [0.46, 0.348], [0.573, 0.375], [0.439, 0.454]],TRAIL=[[0.29, 0.128, [255, 190, 40]], [0.335, 0.128, [130, 195, 60]], [0.395, 0.095, [255, 205, 50]], [0.361, 0.201, [150, 110, 200]], [0.259, 0.227, [170, 110, 210]], [0.298, 0.299, [90, 160, 225]], [0.348, 0.281, [130, 195, 60]], [0.353, 0.389, [255, 175, 40]]],fly=[];let lastFly=0,nextFly=0;
@@ -252,7 +254,7 @@ function starAt(g,x,y,r,rot,c,al){g.save();g.translate(x,y);g.rotate(rot);g.glob
   g.fillStyle=`rgba(${c},.28)`;g.save();g.scale(1.5,1.5);g.fill();g.restore();g.fillStyle=`rgb(${c})`;g.fill();g.beginPath();g.arc(0,0,Math.max(.8,r*.13),0,6.283);g.fillStyle='#fff';g.fill();g.restore()}
 function drawTwinkle(now){
   const g=sp.tw,S=orbit.sun;if(!g)return;g.clearRect(0,0,sp.w,sp.h);if(!S||S.o<.2)return;
-  const dt=Math.min(.05,(now-(lastFly||now))/1000);lastFly=now;const W=S.w*S.s,H=S.h*S.s,X=S.px-W/2,Y=S.py-H/2-H*.15,base=W/62;
+  const dt=Math.min(.05,(now-(lastFly||now))/1000);lastFly=now;const W=S.w*S.s,H=S.h*S.s,X=S.px-W/2,Y=S.py-H/2,base=W/62;
   GLINTS.forEach((p,i)=>{ // the sparkles on the brain glint softly
     const k=Math.pow(.5+.5*Math.sin(now/(1050+i*120)+i*1.9),3),x=X+p[0]*W,y=Y+p[1]*H;
     starAt(g,x,y,base*(.45+.9*k),now/5200+i,[255,252,240],.22+.42*k)});
@@ -288,7 +290,7 @@ function tick(now){
   if(L){const p=REDUCED?1:Math.min(1,(now-L.t0)/620),q=ease(p);
     L.cards.forEach(c=>{const hit=c.el===L.source;
       const s=(c.s||1)*(L.dirIn?(hit?1+q*1.9:1+q*.3):1-q*.45),x=hit?c.px+(innerWidth/2-c.px)*q:c.px,y=hit?c.py+(innerHeight/2-c.py)*q:c.py;
-      c.el.style.pointerEvents='none';c.el.style.opacity=(c.o||1)*(1-q);if(c.haloEl)c.haloEl.style.opacity=1-q;c.el.style.transform=`translate(${x-c.w/2}px,${y-c.h/2}px) scale(${s})`});
+      c.el.style.pointerEvents='none';c.el.style.opacity=(c.o||1)*(1-q);c.el.style.transform=`translate(${x-c.w/2}px,${y-c.h/2}px) scale(${s})`});
     if(p>=1){L.cards.forEach(c=>c.el.remove());field.leaving=null}}
   if(!document.body.classList.contains('field-on'))return;
   if(orbit.on){tickOrbit(now,dt);return}
