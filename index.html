@@ -19,6 +19,9 @@ body{background:var(--ground)}
 #nebula i:nth-child(3){right:-22%;bottom:-30%;width:76%;height:96%;background:radial-gradient(closest-side,rgba(112,38,160,.28),transparent);animation-duration:97s;animation-delay:-45s}
 #nebula i:nth-child(4){right:-10%;top:-24%;width:54%;height:68%;background:radial-gradient(closest-side,rgba(70,30,140,.2),transparent);animation-duration:73s;animation-delay:-10s}
 @keyframes neb{from{transform:translate(-5%,-4%) scale(.92);opacity:.72}to{transform:translate(6%,5%) scale(1.14);opacity:1}}
+.brandbox{margin-right:auto;min-width:0}.brandbox .brand{display:block;margin:0}
+.tagline{display:none;color:var(--dim);font-size:14px;font-weight:600;margin-top:1px;animation:emerge 1.6s cubic-bezier(.2,.8,.2,1) .7s both}
+body.field-on:not(.about-on) .tagline{display:block}
 body.field-on header{background:transparent;transition:background .3s}
 body.about-on.scrolled header{background:var(--ground)}
 .logo-float.social{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--ink);font-weight:700;font-size:15px;text-align:center}
@@ -139,7 +142,7 @@ body.about-on #page{display:block;padding:0;position:relative;z-index:6;pointer-
 </style>
 
 <header>
-  <a class="brand" href="#home">Neurocise<sup>&reg;</sup> Studios</a>
+  <div class="brandbox"><a class="brand" href="#home">Neurocise<sup>&reg;</sup> Studios</a><div class="tagline">Explore the Elvis Lester Universe</div></div>
   <nav aria-label="Main">
     <a href="#home" data-v="home" class="on">Home</a>
     <div class="menu" id="m-models"><button aria-expanded="false" aria-controls="drop-models">Explore the Models</button><div class="drop" id="drop-models" hidden></div></div>
