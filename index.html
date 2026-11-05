@@ -482,7 +482,18 @@ function route(){ // home and about are the two pages for now; other addresses l
 }
 addEventListener('scroll',()=>document.body.classList.toggle('scrolled',scrollY>40),{passive:true});
 addEventListener('hashchange',route);
-let rz,lastW=innerWidth,lastH=innerHeight;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{const about=document.body.classList.contains('about-on');if(innerWidth===lastW&&(about||Math.abs(innerHeight-lastH)<140))return;lastW=innerWidth;lastH=innerHeight;route()},300)});
+let rz,lastW=innerWidth,lastH=innerHeight;
+function refit(){ // keeps the layout right when a page opens in a sheet or background tab, then grows
+  const W=innerWidth,H=innerHeight;if(W===lastW&&H===lastH)return;
+  const about=document.body.classList.contains('about-on'),sameW=W===lastW;
+  if(about&&sameW)return; // on the About page, the phone's address bar sliding must not move anything
+  lastW=W;lastH=H;
+  if(sameW&&orbit.on){sizeSparks();orbitBox();return} // smooth: logos keep their places on the orbit
+  route();
+}
+addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(refit,200)});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refit()});
+addEventListener('pageshow',refit);
 route();
 </script>
 
