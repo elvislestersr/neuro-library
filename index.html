@@ -26,6 +26,7 @@ body.about-on.scrolled header{background:var(--ground)}
 .headshot{position:relative}
 .headshot img{position:relative;filter:none!important;transform:translate(-5.5%,10%);-webkit-mask-image:radial-gradient(circle at 55.5% 40%,#000 0,#000 41%,transparent 53%);mask-image:radial-gradient(circle at 55.5% 40%,#000 0,#000 41%,transparent 53%)}
 body.about-on #nebula i:nth-child(1){display:none}
+.headshot::before{content:"";position:absolute;inset:-22%;border-radius:50%;background:radial-gradient(closest-side,#000,#000 72%,rgba(0,0,0,.7) 86%,transparent);pointer-events:none}
 .bio-cols>.em{animation-duration:1.4s}
 .fc{text-decoration:none;color:inherit}
 body.about-on{height:auto;min-height:100%}
