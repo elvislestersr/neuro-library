@@ -23,8 +23,8 @@ body.about-on.scrolled header{background:var(--ground)}
 .social img{width:100%;height:auto;object-fit:contain;aspect-ratio:1.4;filter:none!important}
 .fc:hover .app{box-shadow:0 0 22px rgba(255,255,255,.35)}
 .headshot{position:relative}
-.headshot img{position:relative;filter:none!important;-webkit-mask-image:linear-gradient(to right,transparent,#000 11%,#000 89%,transparent),linear-gradient(to bottom,transparent,#000 9%,#000 88%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent,#000 11%,#000 89%,transparent),linear-gradient(to bottom,transparent,#000 9%,#000 88%,transparent);mask-composite:intersect}
-.headshot::before{content:"";position:absolute;inset:-40% -72%;border-radius:50%;background:radial-gradient(closest-side,#000,#000 30%,rgba(20,7,48,.96) 44%,rgba(44,20,100,.72) 60%,rgba(62,30,132,.42) 76%,rgba(76,40,156,.16) 90%,transparent);pointer-events:none}
+.headshot img{position:relative;filter:none!important;-webkit-mask-image:linear-gradient(to right,transparent,#000 13%,#000 89%,transparent),linear-gradient(to bottom,transparent,#000 4.5%,#000 82%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent,#000 13%,#000 89%,transparent),linear-gradient(to bottom,transparent,#000 4.5%,#000 82%,transparent);mask-composite:intersect}
+.headshot::before{content:"";position:absolute;inset:-52% -82%;border-radius:50%;background:radial-gradient(closest-side,#000,#000 44%,rgba(14,5,34,.97) 54%,rgba(36,16,84,.66) 68%,rgba(52,26,116,.34) 82%,rgba(66,36,140,.1) 93%,transparent);pointer-events:none}
 .fc{text-decoration:none;color:inherit}
 body.about-on{height:auto;min-height:100%}
 .bio{margin-top:var(--stage);padding:14px var(--gr) 72px var(--gl);pointer-events:auto}
@@ -212,7 +212,7 @@ function tickOrbit(now,dt){
     c.hover+=((c.over?1:0)-c.hover)*Math.min(1,dt*4);const h=c.hover;
     if(c.sun){ // the core model holds the center and breathes
       const en=ease(Math.min(1,Math.max(0,(now-c.born)/1200))),s=(1+(REDUCED?0:Math.sin(t*.5)*.012)+h*.05)*(.85+.15*en);
-      c.px=cx;c.py=cy;c.s=s;c.o=en;orbit.sun=c;c.el.style.opacity=en.toFixed(3);c.el.style.zIndex=c.over?300:60;
+      c.px=cx;c.py=cy;c.s=s;c.o=en;orbit.sun=c;c.el.style.opacity=en.toFixed(3);c.el.style.zIndex=c.plain?0:c.over?300:60;
       c.el.style.transform=`translate(${(cx-c.w/2).toFixed(1)}px,${(cy-c.h/2).toFixed(1)}px) scale(${s.toFixed(3)})`;return}
     if(c.over)c.off-=speed*dt;
     else if(c.off){ // ease back to its place by the shortest way, never making up lost orbits
@@ -225,7 +225,7 @@ function tickOrbit(now,dt){
     const x=Math.max(halfW+4,Math.min(B.W-halfW-4,cx+Math.sin(th)*RX)),y=Math.max(B.top+halfH,Math.min(B.bottom-halfH,cy+z*RY));
     const op=(B.narrow?1:.72+.28*e)*(anyOver&&!c.over?.75:1);
     c.px=x;c.py=y;c.s=s;c.o=(op+(1-op)*h)*en;
-    c.el.style.opacity=c.o.toFixed(3);c.el.style.zIndex=c.over?300:Math.round(e*100);
+    c.el.style.opacity=c.o.toFixed(3);c.el.style.zIndex=c.over?300:1+Math.round(e*100);
     c.el.style.transform=`translate(${(x-c.w/2).toFixed(1)}px,${(y-c.h/2).toFixed(1)}px) scale(${s.toFixed(3)})`;
     const b=0;
     if(b!==c.blur){c.blur=b;c.el.style.filter=b?`blur(${b}px)`:'none'}
