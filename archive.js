@@ -13,7 +13,7 @@
      link:  Stripe, LearnWorlds or other store URL. Leave "" until ready.
      tags:  any extra labels, for example ["Beginner"]
 
-   The seven models and logos are real. Every product below is a placeholder. */
+   The seven models and logos are real. */
 
 const MODELS = [
   { id: "psynergetics", url: "https://www.neurocisestudios.com/psynergetics", name: "Psynergetics", logo: "logos/psynergetics.png", ratio: 2.227, core: true, description: "" },
@@ -25,14 +25,5 @@ const MODELS = [
   { id: "neurotrancework", url: "https://www.neurocisestudios.com/neurotrancework", name: "NeuroTrancework", logo: "logos/neurotrancework.png", ratio: 2.5, description: "" },
 ];
 
-/* Placeholder products. Delete this block when real products go in. */
+/* Products live on LearnWorlds for now, so this list stays empty. */
 const PRODUCTS = [];
-const COUNTS = { book: [6,5,7,4,3,5,4,3], audio: [4,6,5,8,3,4,3,5], course: [3,2,4,5,2,3,3,2] };
-const WORD = { book: "Book", audio: "Audio", course: "Course" };
-MODELS.forEach((m, i) => {
-  Object.keys(COUNTS).forEach(type => {
-    for (let n = 1; n <= COUNTS[type][i % 8]; n++) {
-      PRODUCTS.push({ title: `${WORD[type]} ${n}`, type, model: m.id, about: "", cover: "", link: "", tags: [] });
-    }
-  });
-});
