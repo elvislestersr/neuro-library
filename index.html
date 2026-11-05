@@ -102,6 +102,8 @@ sup{font-size:.55em;line-height:0;vertical-align:.55em;font-weight:600}
 #outbtn{position:fixed;z-index:15;right:var(--gr);bottom:max(16px,env(safe-area-inset-bottom,0px));padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:var(--ground)}#outbtn:hover{border-color:var(--gold);color:var(--gold)}
 
 body.about-on #page{display:block;padding:0;position:relative;z-index:6;pointer-events:none;min-height:0}
+/* LinkedIn's built-in browser can fail to paint filtered, layered images, so it gets the simplest version */
+.inapp .fc{will-change:auto}.inapp .logo-float img{filter:none!important}
 /* cards */
 .logo-float{display:block}.logo-float img{display:block;width:100%;height:auto}
 .tile{display:block;background:var(--card);color:var(--cardink);border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.4);overflow:hidden}
@@ -161,6 +163,7 @@ body.about-on #page{display:block;padding:0;position:relative;z-index:6;pointer-
 
 <script src="archive.js"></script>
 <script>
+const INAPP=/LinkedInApp/i.test(navigator.userAgent);if(INAPP)document.documentElement.classList.add('inapp');
 const $=id=>document.getElementById(id),E=(s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DOCK=[['Continuing Education','https://www.neurocisestudios.com/continuing-education','255,212,40'],['Books','https://www.neurocisestudios.com/books','250,150,40'],['Audios','https://www.neurocisestudios.com/audios','120,205,240'],['Videos','https://www.neurocisestudios.com/video','60,130,230'],['HypnoSonics&trade;','https://www.neurocisestudios.com/hypnosonics','190,90,220'],['NLP Resources','https://www.neurocisestudios.com/nlp-programs','140,205,70']];
 const OFFERS=[{key:'books',type:'book',name:'Books'},{key:'audios',type:'audio',name:'Audios'},{key:'courses',type:'course',name:'Courses'}];
@@ -205,6 +208,7 @@ function setOrbit(items){
     const el=document.createElement('a');el.className='fc';if(it.url)el.href=it.url;if(it.newTab){el.target='_blank';el.rel='noopener'}box.append(el);
     const c={el,w:100,h:72,ratio:it.ratio,sun:!!it.core,plain:!!it.plain,base:(it.core?orbitN:orbitN++)/Math.max(1,items.filter(x=>!x.core).length)*6.2832+(innerWidth<=640?0:.35),off:0,hover:0,born:performance.now()+(REDUCED?0:200+i*90),blur:-1,seed:Math.random()*6.28};
     mountCard(c,it);
+    if(INAPP)el.querySelectorAll('img').forEach(i=>{const nudge=()=>{el.style.visibility='hidden';void el.offsetHeight;el.style.visibility=''};i.complete?setTimeout(nudge,50):i.addEventListener('load',nudge)});
     el.onpointerenter=()=>c.over=true;el.onpointerleave=()=>c.over=false;el.onfocus=()=>c.over=true;el.onblur=()=>c.over=false;
     return c});
   orbitBox();
@@ -243,7 +247,7 @@ function tickOrbit(now,dt){
 /* Neural flashes: a brief impulse arcs across the page, usually from one model to another. */
 const NEURO=[[140,205,70],[120,205,240],[255,212,40],[250,150,40],[190,90,220],[60,130,230]]; // the Psynergetics logo's colors
 const sp={list:[],next:0,cv:null,ctx:null,w:0,h:0};
-function sizeSparks(){const d=Math.min(devicePixelRatio||1,2);sp.w=innerWidth;sp.h=innerHeight;['sparks','twinkle'].forEach(id=>{const cv=$(id);cv.width=sp.w*d;cv.height=sp.h*d;const g=cv.getContext('2d');g.setTransform(d,0,0,d,0,0);if(id==='sparks')sp.ctx=g;else sp.tw=g});buildNetwork()}
+function sizeSparks(){const d=INAPP?1:Math.min(devicePixelRatio||1,2);sp.w=innerWidth;sp.h=innerHeight;['sparks','twinkle'].forEach(id=>{const cv=$(id);cv.width=sp.w*d;cv.height=sp.h*d;const g=cv.getContext('2d');g.setTransform(d,0,0,d,0,0);if(id==='sparks')sp.ctx=g;else sp.tw=g});buildNetwork()}
 function arcPath(a,b,n,bend,jit){
   const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,cx=(a.x+b.x)/2+nx*L*bend,cy=(a.y+b.y)/2+ny*L*bend,P=[];let w=0;
   for(let i=0;i<=n;i++){const t=i/n,u=1-t;w=w*.72+(Math.random()-.5)*jit;const tap=Math.sin(t*Math.PI);
@@ -373,7 +377,7 @@ function tick(now){
 requestAnimationFrame(tick);
 
 /* ---------- zoom levels ---------- */
-function modelItem(m){const n=productsFor(m.id).length;return{label:`Enter ${m.name}`,core:m.core,html:`<span class="logo-float${m.core?' sun':''}" title="${E(m.name)}"><img src="${E(m.logo)}" alt=""></span>`,ratio:m.ratio,url:m.url,newTab:true,open:e=>leaveTo(e.currentTarget)}}
+function modelItem(m){const n=productsFor(m.id).length;return{label:`Enter ${m.name}`,core:m.core,html:`<span class="logo-float${m.core?' sun':''}" title="${E(m.name)}"><img src="${E(m.logo)}" alt="" decoding="sync"></span>`,ratio:m.ratio,url:m.url,newTab:true,open:e=>leaveTo(e.currentTarget)}}
 function offerItem(m,o){const n=productsFor(m.id,o.type).length;return{label:`${m.name} ${o.name}`,html:`<span class="tile offer-tile t-${o.type}" style="aspect-ratio:1.3"><b>${o.name}</b><span>${plural(n,o.type)}</span></span>`,open:()=>{location.hash=`zoom-${m.id}-${o.key}`}}}
 function productItem(p){return{label:p.title,html:coverHTML(p),open:()=>openSheet(p)}}
 function leaveTo(el){ // the page opens in a new tab; here the emerging zoom plays, then the logos return
