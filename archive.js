@@ -1,6 +1,6 @@
 /* THE ARCHIVE. The whole site is built from this one file.
 
-   To add a model: add a line to MODELS.
+   To add a model: add a line to MODELS. url: where its logo and menu link go.
      core: true marks the one model at the center of the home page.
      logo: image file for that model, ratio: its width divided by its height, description: shown on the Models page.
      history, how, ce: optional text for the box on that model's page
@@ -16,13 +16,13 @@
    The seven models and logos are real. Every product below is a placeholder. */
 
 const MODELS = [
-  { id: "psynergetics", name: "Psynergetics", logo: "logos/psynergetics.png", ratio: 2.227, core: true, description: "" },
-  { id: "nlp", name: "NLP", logo: "logos/nlp.png", ratio: 1.016, description: "" },
-  { id: "identity-evolution", name: "Identity Evolution", logo: "logos/identity-evolution.png", ratio: 2.085, description: "" },
-  { id: "neurocise-studios", name: "Neurocise Studios", logo: "logos/neurocise-studios.png", ratio: 1.385, description: "" },
-  { id: "emerge", name: "EMERGE", logo: "logos/emerge.png", ratio: 1.641, description: "" },
-  { id: "eyepointing-neuropointing", name: "EyePointing & NeuroPointing", logo: "logos/eyepointing-neuropointing.png", ratio: 1.667, description: "" },
-  { id: "neurotrancework", name: "NeuroTrancework", logo: "logos/neurotrancework.png", ratio: 2.5, description: "" },
+  { id: "psynergetics", url: "https://www.neurocisestudios.com/psynergetics", name: "Psynergetics", logo: "logos/psynergetics.png", ratio: 2.227, core: true, description: "" },
+  { id: "nlp", url: "https://www.neurocisestudios.com/nlp", name: "NLP", logo: "logos/nlp.png", ratio: 1.016, description: "" },
+  { id: "identity-evolution", url: "https://www.neurocisestudios.com/identity-evolution", name: "Identity Evolution", logo: "logos/identity-evolution.png", ratio: 2.085, description: "" },
+  { id: "neurocise-studios", url: "https://www.neurocisestudios.com/neurocise", name: "Neurocise Studios", logo: "logos/neurocise-studios.png", ratio: 1.385, description: "" },
+  { id: "emerge", url: "https://www.neurocisestudios.com/eye-movement", name: "EMERGE", logo: "logos/emerge.png", ratio: 1.641, description: "" },
+  { id: "eyepointing-neuropointing", url: "https://www.neurocisestudios.com/eye-movement", name: "EyePointing & NeuroPointing", logo: "logos/eyepointing-neuropointing.png", ratio: 1.667, description: "" },
+  { id: "neurotrancework", url: "https://www.neurocisestudios.com/neurotrancework", name: "NeuroTrancework", logo: "logos/neurotrancework.png", ratio: 2.5, description: "" },
 ];
 
 /* Placeholder products. Delete this block when real products go in. */
