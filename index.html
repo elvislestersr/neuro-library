@@ -107,7 +107,6 @@ sup{font-size:.55em;line-height:0;vertical-align:.55em;font-weight:600}
 body.about-on #page{display:block;padding:0;position:relative;z-index:6;pointer-events:none;min-height:0}
 /* LinkedIn's built-in browser can fail to paint filtered, layered images, so it gets the simplest version */
 .inapp .fc{will-change:auto}.inapp .logo-float img{filter:none!important}
-.inapp #sparks,.inapp #twinkle{display:none}
 .inapp #field{pointer-events:auto;display:flex;flex-wrap:wrap;align-content:safe center;align-items:center;justify-content:center;gap:10px 10px;overflow-y:auto;box-sizing:border-box;padding-inline:var(--gl) var(--gr)}
 .inapp .fc.pl{position:static;display:block;width:clamp(84px,29%,190px)}.inapp .fc.pl.core{width:clamp(170px,62%,380px)}
 .inapp .fc.pl.core{margin-inline:calc((100% - clamp(170px,62%,380px))/2)}
@@ -394,6 +393,10 @@ function tick(now){
     if(p>=1){L.cards.forEach(c=>c.el.remove());field.leaving=null}}
   if(!document.body.classList.contains('field-on'))return;
   if(orbit.on){tickOrbit(now,dt);return}
+  if(INAPP){ // still logos, but the sparkles and arcs keep moving
+    const img=document.querySelector('.fc.pl.core img'),about=document.body.classList.contains('about-on');
+    if(img&&!about){const q=img.getBoundingClientRect(),r=img.naturalWidth?img.naturalWidth/img.naturalHeight:2.1,w=Math.min(q.width,q.height*r);orbit.sun={px:q.left+q.width/2,py:q.top+q.height/2,w,h:w/r,s:1,o:1}}else orbit.sun=about?{plain:true,o:1}:null;
+    drawSparks(now);return}
   const anyOver=field.cards.some(c=>c.over);
   field.cards.forEach(c=>{
     c.hover+=((c.over?1:0)-c.hover)*Math.min(1,dt*6);
@@ -524,7 +527,7 @@ function route(){ // home and about are the two pages for now; other addresses l
   const about=h==='about';document.documentElement.style.setProperty('--stage',stageH()+'px');
   closeSheet();closeMenus();document.body.classList.add('field-on');document.body.classList.toggle('about-on',about);document.body.classList.remove('scrolled');
   document.querySelectorAll('header nav>a').forEach(a=>a.classList.toggle('on',a.dataset.v===(about?'about':'home')));
-  sizeSparks();sp.list=[];sp.next=performance.now()+800;$('cap').hidden=about;
+  sizeSparks();sp.list=[];fly.length=0;sp.next=performance.now()+800;$('cap').hidden=about;
   if(about)showAbout();else{$('page').textContent='';showHome()}
   scrollTo(0,0);
 }
