@@ -113,6 +113,11 @@ body.about-on #page{display:block;padding:0;position:relative;z-index:6;pointer-
 .inapp .fc.pl.core{margin-inline:calc((100% - clamp(170px,62%,380px))/2)}
 body.about-on .fc.pl{width:clamp(50px,15%,96px)}body.about-on .fc.pl .social{font-size:10.5px;gap:3px;white-space:nowrap}
 body.about-on .fc.pl.core{width:clamp(130px,38%,240px);margin-inline:calc((100% - clamp(130px,38%,240px))/2)}
+.inapp body:not(.about-on) #field{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,minmax(0,1fr));grid-template-areas:"e e" "p n" "s s" "t i" "l l";gap:8px;justify-items:center;align-items:center;overflow:hidden}
+.inapp body:not(.about-on) .fc.pl,.inapp body:not(.about-on) .fc.pl.core{width:100%;height:100%;max-width:none;margin:0;min-height:0}
+.inapp body:not(.about-on) .fc.pl .logo-float{width:100%;height:100%}
+.inapp body:not(.about-on) .fc.pl img{width:100%;height:100%;object-fit:contain}
+.inapp body:not(.about-on) .fc.pl:nth-child(1){grid-area:s}.inapp body:not(.about-on) .fc.pl:nth-child(2){grid-area:l}.inapp body:not(.about-on) .fc.pl:nth-child(3){grid-area:i}.inapp body:not(.about-on) .fc.pl:nth-child(4){grid-area:n}.inapp body:not(.about-on) .fc.pl:nth-child(5){grid-area:e}.inapp body:not(.about-on) .fc.pl:nth-child(6){grid-area:p}.inapp body:not(.about-on) .fc.pl:nth-child(7){grid-area:t}
 /* cards */
 .logo-float{display:block}.logo-float img{display:block;width:100%;height:auto}
 .tile{display:block;background:var(--card);color:var(--cardink);border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.4);overflow:hidden}
