@@ -222,7 +222,7 @@ function orbitBox(){
   const W=innerWidth,top=document.querySelector('header').getBoundingClientRect().bottom+12,bottom=document.body.classList.contains('about-on')?stageH()-6:$('cap').getBoundingClientRect().top-16,A=Math.max(160,bottom-top);
   const narrow=W<=640,short=innerHeight<=520&&W>innerHeight,plain=field.cards.some(c=>c.plain),side=short?(plain?Math.min(W*.09,A*.24):Math.min(W*.17,A*.44)):plain&&!narrow?Math.min(W*.13,A*.2,180):Math.min(W*(narrow?.3:.15),A*.25,215),area=side*side/1.25;
   let maxH=0,maxW=1;
-  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=c.plain?Math.min(W*(narrow?.3:.3),A*(short?.46:.56)*r):Math.min(W*(narrow?.5:.33),A*(short?.36:.33)*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
+  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=c.plain?Math.min(W*(narrow?.3:.3),A*(short?.46:.56)*r):Math.min(W*(narrow?.5:.33),A*(short?.36:.33)*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r)*(c.size||1);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
   orbit.box={W,top,bottom:top+A,A,maxH,narrow,maxW,plain};
 }
 function fitPlain(){const box=$('field'),about=document.body.classList.contains('about-on');
@@ -241,14 +241,14 @@ function setOrbit(items){
   if(INAPP){ // no animation here: plain, ordinary images laid out by the browser
     orbit.on=false;orbit.sun=null;const about=document.body.classList.contains('about-on');
     fitPlain();
-    items.forEach(it=>{const el=document.createElement('a');el.className='fc pl'+(it.core?' core':'');if(it.url)el.href=it.url;if(it.newTab){el.target='_blank';el.rel='noopener'}el.innerHTML=it.html;el.setAttribute('aria-label',it.label);if(it.plain||!it.url)el.onclick=e=>e.preventDefault();box.append(el)});
+    items.forEach(it=>{const el=document.createElement('a');el.className='fc pl'+(it.core?' core':'');if(it.url)el.href=it.url;if(it.newTab){el.target='_blank';el.rel='noopener'}el.innerHTML=it.html;if(it.size){const im=el.querySelector('img');if(im)im.style.transform='scale('+it.size+')'}el.setAttribute('aria-label',it.label);if(it.plain||!it.url)el.onclick=e=>e.preventDefault();box.append(el)});
     return;
   }
   field.queue=[];field.overflow=false;orbit.on=true;
   let orbitN=0;
   field.cards=items.map((it,i)=>{
     const el=document.createElement('a');el.className='fc';if(it.url)el.href=it.url;if(it.newTab){el.target='_blank';el.rel='noopener'}box.append(el);
-    const c={el,w:100,h:72,ratio:it.ratio,sun:!!it.core,plain:!!it.plain,base:(it.core?orbitN:orbitN++)/Math.max(1,items.filter(x=>!x.core).length)*6.2832+(innerWidth<=640?0:.35),off:0,hover:0,born:performance.now()+(REDUCED?0:200+i*90),blur:-1,seed:Math.random()*6.28};
+    const c={el,w:100,h:72,ratio:it.ratio,size:it.size||1,sun:!!it.core,plain:!!it.plain,base:(it.core?orbitN:orbitN++)/Math.max(1,items.filter(x=>!x.core).length)*6.2832+(innerWidth<=640?0:.35),off:0,hover:0,born:performance.now()+(REDUCED?0:200+i*90),blur:-1,seed:Math.random()*6.28};
     mountCard(c,it);
     if(INAPP)el.querySelectorAll('img').forEach(i=>{const nudge=()=>{el.style.visibility='hidden';void el.offsetHeight;el.style.visibility=''};i.complete?setTimeout(nudge,50):i.addEventListener('load',nudge)});
     el.onpointerenter=()=>c.over=true;el.onpointerleave=()=>c.over=false;el.onfocus=()=>c.over=true;el.onblur=()=>c.over=false;
@@ -423,7 +423,7 @@ function tick(now){
 requestAnimationFrame(tick);
 
 /* ---------- zoom levels ---------- */
-function modelItem(m){const n=productsFor(m.id).length;return{label:`Enter ${m.name}`,core:m.core,html:`<span class="logo-float${m.core?' sun':''}" title="${E(m.name)}"><img src="${E(m.logo)}" alt="" decoding="sync"></span>`,ratio:m.ratio,url:m.url,newTab:true,open:e=>leaveTo(e.currentTarget)}}
+function modelItem(m){const n=productsFor(m.id).length;return{label:`Enter ${m.name}`,core:m.core,html:`<span class="logo-float${m.core?' sun':''}" title="${E(m.name)}"><img src="${E(m.logo)}" alt="" decoding="sync"></span>`,ratio:m.ratio,size:m.size,url:m.url,newTab:true,open:e=>leaveTo(e.currentTarget)}}
 function offerItem(m,o){const n=productsFor(m.id,o.type).length;return{label:`${m.name} ${o.name}`,html:`<span class="tile offer-tile t-${o.type}" style="aspect-ratio:1.3"><b>${o.name}</b><span>${plural(n,o.type)}</span></span>`,open:()=>{location.hash=`zoom-${m.id}-${o.key}`}}}
 function productItem(p){return{label:p.title,html:coverHTML(p),open:()=>openSheet(p)}}
 function leaveTo(el){if(INAPP)return; // the page opens in a new tab; here the emerging zoom plays, then the logos return
