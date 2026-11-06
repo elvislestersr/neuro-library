@@ -222,7 +222,7 @@ function orbitBox(){
   const W=innerWidth,top=document.querySelector('header').getBoundingClientRect().bottom+12,bottom=document.body.classList.contains('about-on')?stageH()-6:$('cap').getBoundingClientRect().top-16,A=Math.max(160,bottom-top);
   const narrow=W<=640,short=innerHeight<=520&&W>innerHeight,plain=field.cards.some(c=>c.plain),side=short?(plain?Math.min(W*.09,A*.24):Math.min(W*.14,A*.36)):plain&&!narrow?Math.min(W*.13,A*.2,180):Math.min(W*(narrow?.3:.15),A*.25,215),area=side*side/1.25;
   let maxH=0,maxW=1;
-  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=c.plain?Math.min(W*(narrow?.3:.3),A*(short?.46:.56)*r):Math.min(W*(narrow?.5:.33),A*(short?.27:.33)*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r)*(c.size||1);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
+  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=c.plain?Math.min(W*(narrow?.3:.3),A*(short?.46:.56)*r):Math.min(W*(narrow?.5:.33),A*(short?.31:.33)*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r)*(c.size||1);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
   orbit.box={W,top,bottom:top+A,A,maxH,narrow,maxW,plain};
 }
 function fitPlain(){const box=$('field'),about=document.body.classList.contains('about-on');
