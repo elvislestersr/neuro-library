@@ -118,6 +118,17 @@ body.about-on .fc.pl.core{width:clamp(130px,38%,240px);margin-inline:calc((100% 
 .inapp body:not(.about-on) .fc.pl .logo-float{width:100%;height:100%}
 .inapp body:not(.about-on) .fc.pl img{width:100%;height:100%;object-fit:contain}
 .inapp body:not(.about-on) .fc.pl:nth-child(1){grid-area:s}.inapp body:not(.about-on) .fc.pl:nth-child(2){grid-area:l}.inapp body:not(.about-on) .fc.pl:nth-child(3){grid-area:i}.inapp body:not(.about-on) .fc.pl:nth-child(4){grid-area:n}.inapp body:not(.about-on) .fc.pl:nth-child(5){grid-area:e}.inapp body:not(.about-on) .fc.pl:nth-child(6){grid-area:p}.inapp body:not(.about-on) .fc.pl:nth-child(7){grid-area:t}
+/* phones turned sideways: the logos get the room */
+@media (orientation:landscape) and (max-height:520px){
+  header{padding-top:calc(env(safe-area-inset-top,0px) + 5px);padding-bottom:4px;gap:2px 16px}
+  .brandbox{display:flex;align-items:baseline;gap:10px}.brandbox .brand{font-size:15px}.tagline{font-size:12px;margin:0}
+  header nav{font-size:13px;gap:2px 14px}
+  .caption{bottom:max(4px,env(safe-area-inset-bottom,0px))}
+  .dock{display:flex;gap:clamp(8px,2vw,22px)}
+  .dk{flex-direction:row;width:auto;gap:5px;font-size:12px;white-space:nowrap}
+  .orb{width:11px;height:11px;box-shadow:0 0 5px rgba(var(--c),.42)}.dk.seen .orb{box-shadow:0 0 7px rgba(var(--c),.8)}
+  .inapp body:not(.about-on) #field{grid-template-columns:1fr 1fr 1fr;grid-template-rows:repeat(3,minmax(0,1fr));grid-template-areas:"p e n" "t s i" ". l ."}
+}
 /* cards */
 .logo-float{display:block}.logo-float img{display:block;width:100%;height:auto}
 .tile{display:block;background:var(--card);color:var(--cardink);border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.4);overflow:hidden}
@@ -209,9 +220,9 @@ const orbit={on:false,t:0,rot:0};
 function stageH(){return Math.round(innerHeight*(innerWidth<=640?.7:.68))}
 function orbitBox(){
   const W=innerWidth,top=document.querySelector('header').getBoundingClientRect().bottom+12,bottom=document.body.classList.contains('about-on')?stageH()-6:$('cap').getBoundingClientRect().top-16,A=Math.max(160,bottom-top);
-  const narrow=W<=640,plain=field.cards.some(c=>c.plain),side=plain&&!narrow?Math.min(W*.13,A*.2,180):Math.min(W*(narrow?.3:.15),A*.25,215),area=side*side/1.25;
+  const narrow=W<=640,short=innerHeight<=520&&W>innerHeight,plain=field.cards.some(c=>c.plain),side=short?Math.min(W*.17,A*.44):plain&&!narrow?Math.min(W*.13,A*.2,180):Math.min(W*(narrow?.3:.15),A*.25,215),area=side*side/1.25;
   let maxH=0,maxW=1;
-  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=c.plain?Math.min(W*(narrow?.33:.3),A*.56*r):Math.min(W*(narrow?.5:.33),A*.33*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
+  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=c.plain?Math.min(W*(narrow?.33:.3),A*.56*r):Math.min(W*(narrow?.5:.33),A*(short?.36:.33)*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
   orbit.box={W,top,bottom:top+A,A,maxH,narrow,maxW,plain};
 }
 function fitPlain(){const box=$('field'),about=document.body.classList.contains('about-on');
