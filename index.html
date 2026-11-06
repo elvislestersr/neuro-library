@@ -208,18 +208,28 @@ function layout(n,cw,ch){ // jittered grid that fits the screen and leaves room 
 const orbit={on:false,t:0,rot:0};
 function stageH(){return Math.round(innerHeight*(innerWidth<=640?.7:.68))}
 function orbitBox(){
-  const W=innerWidth,top=document.querySelector('header').getBoundingClientRect().bottom+12,bottom=document.body.classList.contains('about-on')?stageH()-6:$('cap').getBoundingClientRect().top-12,A=Math.max(160,bottom-top);
+  const W=innerWidth,top=document.querySelector('header').getBoundingClientRect().bottom+12,bottom=document.body.classList.contains('about-on')?stageH()-6:$('cap').getBoundingClientRect().top-16,A=Math.max(160,bottom-top);
   const narrow=W<=640,plain=field.cards.some(c=>c.plain),side=plain&&!narrow?Math.min(W*.13,A*.2,180):Math.min(W*(narrow?.3:.15),A*.25,215),area=side*side/1.25;
   let maxH=0,maxW=1;
   field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=c.plain?Math.min(W*(narrow?.33:.3),A*.56*r):Math.min(W*(narrow?.5:.33),A*.33*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
   orbit.box={W,top,bottom:top+A,A,maxH,narrow,maxW,plain};
 }
+function fitPlain(){const box=$('field'),about=document.body.classList.contains('about-on');
+  box.style.paddingTop=document.querySelector('header').getBoundingClientRect().bottom+8+'px';
+  box.style.paddingBottom=about?'8px':(innerHeight-$('cap').getBoundingClientRect().top+14)+'px'}
+function relayout(){ // text can change size after fonts arrive, so the logos re-measure their space
+  if(!document.body.classList.contains('field-on'))return;
+  if(INAPP)fitPlain();else if(orbit.on&&field.cards.length)orbitBox();
+}
+if(window.ResizeObserver){const ro=new ResizeObserver(()=>relayout());setTimeout(()=>{ro.observe($('cap'));ro.observe(document.querySelector('header'))},0)}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(relayout);
+if(window.visualViewport)visualViewport.addEventListener('resize',relayout);
+setInterval(relayout,1500); // a light, regular re-check, so the logos stay between the menu and the orbs
 function setOrbit(items){
   const box=$('field');field.leaving=null;box.textContent='';lastSource=null;field.cards=[];
   if(INAPP){ // no animation here: plain, ordinary images laid out by the browser
     orbit.on=false;orbit.sun=null;const about=document.body.classList.contains('about-on');
-    box.style.paddingTop=document.querySelector('header').getBoundingClientRect().bottom+8+'px';
-    box.style.paddingBottom=about?'8px':(innerHeight-$('cap').getBoundingClientRect().top+8)+'px';
+    fitPlain();
     items.forEach(it=>{const el=document.createElement('a');el.className='fc pl'+(it.core?' core':'');if(it.url)el.href=it.url;if(it.newTab){el.target='_blank';el.rel='noopener'}el.innerHTML=it.html;el.setAttribute('aria-label',it.label);if(it.plain||!it.url)el.onclick=e=>e.preventDefault();box.append(el)});
     return;
   }
