@@ -272,7 +272,7 @@ function tickOrbit(now,dt){
       c.off=Math.atan2(Math.sin(c.off),Math.cos(c.off));
       const step=(c.off<0?.1:speed*.7)*dt;c.off=Math.abs(c.off)<=step?0:c.off-Math.sign(c.off)*step;
     }
-    const th=c.base+orbit.rot+c.off,z=Math.cos(th),front=(z+1)/2,e=front*front*(3-2*front);
+    const th=c.base+(B.narrow?0:orbit.rot+c.off),z=Math.cos(th),front=(z+1)/2,e=front*front*(3-2*front);
     const en=ease(Math.min(1,Math.max(0,(now-c.born)/1200)));
     const baseS=(B.narrow?.95:S0+(S1-S0)*e)*(.8+.2*en),s=baseS+(Math.max(HS,baseS)-baseS)*h,halfW=c.w*s/2,halfH=c.h*s/2;
     const x=Math.max(halfW+4,Math.min(B.W-halfW-4,cx+Math.sin(th)*RX)),y=Math.max(B.top+halfH,Math.min(B.bottom-halfH,cy+z*RY));
@@ -545,6 +545,7 @@ function refit(){ // keeps the layout right when a page opens in a sheet or back
 addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(refit,200)});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refit()});
 addEventListener('pageshow',refit);
+addEventListener('orientationchange',()=>{setTimeout(refit,350);setTimeout(refit,900)});
 route();
 </script>
 
