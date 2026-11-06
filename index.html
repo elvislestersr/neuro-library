@@ -172,7 +172,7 @@ body.about-on .fc.pl.core{width:clamp(130px,38%,240px);margin-inline:calc((100% 
 
 <script src="archive.js"></script>
 <script>
-const UA=navigator.userAgent,INAPP=/LinkedIn/i.test(UA)||(/iPhone|iPad|iPod/.test(UA)&&!/Safari\//.test(UA)&&!/FBAN|FBAV|FB_IAB|Instagram/i.test(UA));if(INAPP)document.documentElement.classList.add('inapp');
+const UA=navigator.userAgent,INAPP=/LinkedIn/i.test(UA);if(INAPP)document.documentElement.classList.add('inapp');
 const $=id=>document.getElementById(id),E=(s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DOCK=[['Continuing Education','https://www.neurocisestudios.com/continuing-education','255,212,40'],['Books','https://www.neurocisestudios.com/books','250,150,40'],['Audios','https://www.neurocisestudios.com/audios','120,205,240'],['Videos','https://www.neurocisestudios.com/video','60,130,230'],['HypnoSonics&trade;','https://www.neurocisestudios.com/hypnosonics','190,90,220'],['NLP Resources','https://www.neurocisestudios.com/nlp-programs','140,205,70']];
 const OFFERS=[{key:'books',type:'book',name:'Books'},{key:'audios',type:'audio',name:'Audios'},{key:'courses',type:'course',name:'Courses'}];
