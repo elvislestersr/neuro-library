@@ -217,12 +217,12 @@ function layout(n,cw,ch){ // jittered grid that fits the screen and leaves room 
 }
 /* The model orbit: upright logos circle slowly on an oval, moving back and forward in depth, inside a fixed space. */
 const orbit={on:false,t:0,rot:0};
-function stageH(){return Math.round(innerHeight*(innerWidth<=640?.7:.68))}
+function stageH(){const short=innerHeight<=520&&innerWidth>innerHeight;return Math.round(innerHeight*(short?.96:innerWidth<=640?.78:.74))}
 function orbitBox(){
   const W=innerWidth,top=document.querySelector('header').getBoundingClientRect().bottom+12,bottom=document.body.classList.contains('about-on')?stageH()-6:$('cap').getBoundingClientRect().top-16,A=Math.max(160,bottom-top);
-  const narrow=W<=640,short=innerHeight<=520&&W>innerHeight,plain=field.cards.some(c=>c.plain),side=short?Math.min(W*.17,A*.44):plain&&!narrow?Math.min(W*.13,A*.2,180):Math.min(W*(narrow?.3:.15),A*.25,215),area=side*side/1.25;
+  const narrow=W<=640,short=innerHeight<=520&&W>innerHeight,plain=field.cards.some(c=>c.plain),side=short?(plain?Math.min(W*.09,A*.24):Math.min(W*.17,A*.44)):plain&&!narrow?Math.min(W*.13,A*.2,180):Math.min(W*(narrow?.3:.15),A*.25,215),area=side*side/1.25;
   let maxH=0,maxW=1;
-  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=c.plain?Math.min(W*(narrow?.33:.3),A*.56*r):Math.min(W*(narrow?.5:.33),A*(short?.36:.33)*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
+  field.cards.forEach(c=>{const r=c.ratio||1.4;if(c.sun){const w=c.plain?Math.min(W*(narrow?.3:.3),A*(short?.46:.56)*r):Math.min(W*(narrow?.5:.33),A*(short?.36:.33)*r);c.w=w;c.h=w/r;c.el.style.width=w+'px';return}let w=Math.sqrt(area*r);w=Math.min(w,W*(narrow?.44:.27));c.w=w;c.h=w/r;c.el.style.width=w+'px';maxH=Math.max(maxH,c.h);maxW=Math.max(maxW,w)});
   orbit.box={W,top,bottom:top+A,A,maxH,narrow,maxW,plain};
 }
 function fitPlain(){const box=$('field'),about=document.body.classList.contains('about-on');
@@ -260,7 +260,7 @@ function tickOrbit(now,dt){
   const gust=REDUCED?0:Math.pow(.5+.5*Math.sin(t*.09),3),speed=REDUCED||orbit.box.narrow?0:.05+.025*gust;orbit.rot+=speed*dt;
   const B=orbit.box,S0=.72,S1=1.05,HS=1.18;
   // sized so the largest logo stays inside the space at both the front and back of the oval
-  const RY=Math.max(10,(B.A-B.maxH*S1/2-B.maxH*S0/2)/2),cy=B.top+B.maxH*S0/2+RY,cx=B.W/2,RX=Math.min(B.W/2-B.maxW*S1/2-6,B.W*(B.narrow?.34:B.plain?.31:.37));
+  const RY=Math.max(10,(B.A-B.maxH*S1/2-B.maxH*S0/2)/2),cy=B.top+B.maxH*S0/2+RY,cx=B.W/2,RX=Math.min(B.W/2-B.maxW*S1/2-6,B.W*(B.narrow?.34:B.plain?(innerHeight<=520?.4:.31):.37));
   const anyOver=cs.some(c=>c.over);
   cs.forEach(c=>{
     c.hover+=((c.over?1:0)-c.hover)*Math.min(1,dt*4);const h=c.hover;
